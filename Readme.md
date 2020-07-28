@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Елизавета Шошкина](https://up.htmlacademy.ru/ecmascript/12/user/1061045).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Алипкин](https://htmlacademy.ru/profile/ealipkin).
 
 ---
 
