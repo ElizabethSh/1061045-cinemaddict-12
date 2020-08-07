@@ -1,4 +1,5 @@
-export const createFilmInfoTemplate = () => {
+export const createFilmInfoTemplate = (film) => {
+  const {title, description} = film;
   return (
     `<div class="film-details__info-wrap">
       <div class="film-details__poster">
@@ -10,8 +11,8 @@ export const createFilmInfoTemplate = () => {
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
-            <h3 class="film-details__title">The Great Flamarion</h3>
-            <p class="film-details__title-original">Original: The Great Flamarion</p>
+            <h3 class="film-details__title">${title}</h3>
+            <p class="film-details__title-original">Original: ${title}</p>
           </div>
 
           <div class="film-details__rating">
@@ -54,7 +55,7 @@ export const createFilmInfoTemplate = () => {
         </table>
 
         <p class="film-details__film-description">
-          The film opens following a murder at a cabaret in Mexico City in 1936, and then presents the events leading up to it in flashback. The Great Flamarion (Erich von Stroheim) is an arrogant, friendless, and misogynous marksman who displays his trick gunshot act in the vaudeville circuit. His show features a beautiful assistant, Connie (Mary Beth Hughes) and her drunken husband Al (Dan Duryea), Flamarion's other assistant. Flamarion falls in love with Connie, the movie's femme fatale, and is soon manipulated by her into killing her no good husband during one of their acts.
+          ${description}
         </p>
       </div>
     </div>`
