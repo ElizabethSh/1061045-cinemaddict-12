@@ -114,6 +114,9 @@ export const generateFilm = () => {
     title, // Название фильма
     poster, // изображение постера фильма
     description, // От 1 до 5 случайных предложений из текста
-    comments
+    comments,
+    isWatchlist: Boolean(getRandomInteger(0, 1)),
+    isHistory: Boolean(getRandomInteger(0, 1)),
+    isFavorites: Boolean(getRandomInteger(0, 1))
   };
 };
