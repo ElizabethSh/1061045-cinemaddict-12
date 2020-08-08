@@ -55,6 +55,7 @@ if (films.length > MAX_FILMS_PER_STEP) {
 
   const showMoreButton = siteContent.querySelector(`.films-list__show-more`);
 
+  // функция для дополнительного показа карточек по 5 штук
   const showCards = () => {
     films.slice(renderedFilmAmount, renderedFilmAmount + MAX_FILMS_PER_STEP)
       .forEach((film) => render(filmsBoard, createFilmCardTemplate(film), `beforeend`));
@@ -82,7 +83,7 @@ extraFilmsLists.forEach(function (it) {
 });
 
 // footer
-render(footerStatistic, createMovieStatisticTemplate(), `beforeend`);
+render(footerStatistic, createMovieStatisticTemplate(films), `beforeend`);
 
 // popup
 render(siteFooter, createPopupTemplate(), `afterend`);
