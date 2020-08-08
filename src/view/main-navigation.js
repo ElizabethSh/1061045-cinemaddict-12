@@ -1,11 +1,16 @@
-export const createMainNavigationTemplate = () => {
+const createFilterItemTemplate = (filter) => {
+  const {name, count} = filter;
+  return `<a href="#${name}" class="main-navigation__item">${name}
+      <span class="main-navigation__item-count">${count}</span>
+    </a>`;
+};
+
+export const createMainNavigationTemplate = (filters) => {
+  const filterTemplate = filters.map((filter) => createFilterItemTemplate(filter)).join(``);
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-        <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">13</span></a>
-        <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
-        <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">8</span></a>
+        ${filterTemplate}
       </div>
       <a href="#stats" class="main-navigation__additional">Stats</a>
     </nav>`
