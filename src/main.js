@@ -13,6 +13,7 @@ import {createFilmInfoTemplate} from "./view/film-info.js";
 import {createFilmDetailsControlsTemplate} from "./view/film-control.js";
 import {createFilmCommentsTemplate} from "./view/comment.js";
 import {generateFilm} from "./mock/film-card-mock";
+import {generateFilters} from "./mock/filter-mock";
 
 const MAX_FILMS_CARD = 22;
 const MAX_FILMS_PER_STEP = 5;
@@ -24,7 +25,7 @@ const siteFooter = document.querySelector(`.footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
 
 const films = new Array(MAX_FILMS_CARD).fill().map(generateFilm);
-console.log(films);
+const filters = generateFilters(films);
 
 const render = (container, template, position) => {
   container.insertAdjacentHTML(position, template);
@@ -34,7 +35,7 @@ const render = (container, template, position) => {
 render(siteHeader, createProfileTemplate(), `beforeend`);
 
 // main
-render(siteMain, createMainNavigationTemplate(), `beforeend`);
+render(siteMain, createMainNavigationTemplate(filters), `beforeend`);
 render(siteMain, createFilmsSortingTemplate(), `beforeend`);
 
 render(siteMain, createContentTemplate(), `beforeend`);
