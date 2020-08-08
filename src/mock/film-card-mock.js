@@ -1,5 +1,10 @@
 import {getRandomInteger} from "../utils.js";
 
+const generateIndex = (array) => {
+  const index = getRandomInteger(0, array.length - 1);
+  return index;
+};
+
 const generateFilmTitle = () => {
   const filmTitles = [
     `The Dance of Life`,
@@ -10,8 +15,22 @@ const generateFilmTitle = () => {
     `Made for Each Other`,
     `The Great Flamarion`
   ];
-  const index = getRandomInteger(0, filmTitles.length - 1);
-  return filmTitles[index];
+
+  return filmTitles[generateIndex(filmTitles)];
+};
+
+const generatePoster = () => {
+  const posters = [
+    `made-for-each-other.png`,
+    `popeye-meets-sinbad.png`,
+    `sagebrush-trail.jpg`,
+    `santa-claus-conquers-the-martians.jpg`,
+    `the-dance-of-life.jpg`,
+    `the-great-flamarion.jpg`,
+    `the-man-with-the-golden-arm.jpg`
+  ];
+
+  return posters[generateIndex(posters)];
 };
 
 const generateDescription = () => {
@@ -22,40 +41,79 @@ const generateDescription = () => {
   for (let i = 0; i < getRandomInteger(1, maxSentensies); i++) {
     indexes.push(getRandomInteger(0, sentencies.length - 1));
   }
+  const description = [];
+  indexes.forEach((index) => {
+    description.push(sentencies[index]);
+  });
+  return description.join(`.`);
 };
 
-// const generateDate = () => {
-//   const date = new Date();
-//   date.setHours()
-//   console.log(date);
-// };
+const generateDate = () => {
+  const maxDayGap = 7;
+  const daysGap = getRandomInteger(0, maxDayGap);
+  const currentDate = new Date();
+
+  currentDate.setDate(currentDate.getDate() - daysGap);
+  return new Date(currentDate);
+};
+
+const formatDate = (date) => {
+  const dd = date.getDate();
+  const mm = date.getMonth();
+  const year = date.getFullYear();
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  return `${year}/${mm}/${dd} ${hour}:${minutes}`;
+};
+
+const generateEmoji = () => {
+  const emojis = [`smile`, `sleeping`, `puke`, `angry`];
+  return emojis[generateIndex(emojis)];
+};
+
+const generateCommentMessage = () => {
+  const messages = [
+    `Interesting setting and a good cast`,
+    `Booooooooooring`,
+    `Very very old. Meh`,
+    `Almost two hours? Seriously?`
+  ];
+  return messages[generateIndex(messages)];
+};
+
+const generateAutorName = () => {
+  const autorNames = [
+    `Tim Macoveev`,
+    `John Doe`,
+  ];
+  return autorNames[generateIndex(autorNames)];
+};
 
 const generateComment = () => {
-  const emojis = [`smile`, `sleeping`, `puke`, `angry`];
-  const emoji = emojis[getRandomInteger(0, emojis.length - 1)];
+  const date = formatDate(generateDate());
+  const emoji = generateEmoji();
+  const commentMessage = generateCommentMessage();
+  const author = generateAutorName();
   return {
     emoji: `${emoji}.png`,
-    commentMessage: `commentMessage`,
-    author: `author`,
-    // data: generateDate()
+    commentMessage,
+    author,
+    date
   };
 };
 
 export const generateFilm = () => {
-  const maxCommentAmount = 5;
   const title = generateFilmTitle();
   const description = generateDescription();
+  const poster = generatePoster();
+  const maxCommentAmount = 5;
   const randomNumber = Math.round(Math.random() * maxCommentAmount);
   const comments = new Array(randomNumber).fill().map(generateComment);
-  // console.log(title);
-  // const titles = title.toLowerCase().split(` `).join(`-`);
-  // console.log(titles);
+
   return {
     title, // Название фильма
-    poster: `poster`, // изображение постера фильма
+    poster, // изображение постера фильма
     description, // От 1 до 5 случайных предложений из текста
     comments
   };
 };
-
-generateFilm();
