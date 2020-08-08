@@ -1,5 +1,5 @@
 export const createFilmCardTemplate = (film) => {
-  const {title, description} = film;
+  const {title, description, poster} = film;
   const commentAmount = film.comments.length + 1;
 
   return (
@@ -11,7 +11,7 @@ export const createFilmCardTemplate = (film) => {
         <span class="film-card__duration">1h 55m</span>
         <span class="film-card__genre">Musical</span>
       </p>
-      <img src="./images/posters/the-dance-of-life.jpg" alt="" class="film-card__poster">
+      <img src="./images/posters/${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${description}</p>
       <a class="film-card__comments">${commentAmount} comments</a>
       <form class="film-card__controls">
