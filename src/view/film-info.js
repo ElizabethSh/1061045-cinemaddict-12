@@ -1,9 +1,9 @@
 export const createFilmInfoTemplate = (film) => {
-  const {title, description} = film;
+  const {title, description, poster} = film;
   return (
     `<div class="film-details__info-wrap">
       <div class="film-details__poster">
-        <img class="film-details__poster-img" src="./images/posters/the-great-flamarion.jpg" alt="">
+        <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
 
         <p class="film-details__age">18+</p>
       </div>
