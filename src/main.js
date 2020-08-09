@@ -15,7 +15,7 @@ import {createFilmCommentsTemplate} from "./view/comment.js";
 import {generateFilm} from "./mock/film-card-mock";
 import {generateFilters} from "./mock/filter-mock";
 
-const MAX_FILMS_CARD = 22;
+const MAX_FILMS_CARD = 11; // 11, чтобы было видно как работают фильтры
 const MAX_FILMS_PER_STEP = 5;
 const MAX_EXTRA_FILMS_CARD = 2;
 
@@ -46,10 +46,13 @@ render(siteContent, createTopRatedListTemplate(), `beforeend`); // Top Rated fil
 render(siteContent, createMostCommentedTemplate(), `beforeend`);// Most commented films list
 
 const filmsBoard = siteContent.querySelector(`.films-list .films-list__container`);
+
+// создание карточек фильмов в разделе "Все фильмы"
 for (let i = 0; i < Math.min(films.length, MAX_FILMS_PER_STEP); i++) {
   render(filmsBoard, createFilmCardTemplate(films[i]), `beforeend`);
 }
 
+// если карточек больше 5, показывает 5 карточек и кнопку Show more
 if (films.length > MAX_FILMS_PER_STEP) {
   let renderedFilmAmount = MAX_FILMS_PER_STEP;
   render(filmsBoard, createShowMoreButtonTemplate(), `afterend`);
@@ -63,6 +66,7 @@ if (films.length > MAX_FILMS_PER_STEP) {
 
     renderedFilmAmount += MAX_FILMS_PER_STEP;
 
+    // если показаны все имеющиеся карточки, удаляет кнопку
     if (films.length <= renderedFilmAmount) {
       showMoreButton.remove();
     }
