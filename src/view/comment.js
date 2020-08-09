@@ -1,3 +1,5 @@
+import {EMOJIS} from "../const.js";
+
 const createCommentItemTemplate = (comment) => {
   const {emoji, date, commentMessage, author} = comment;
   return `
@@ -17,14 +19,26 @@ const createCommentItemTemplate = (comment) => {
   `;
 };
 
+const createEmojiItemTemplate = (emoji) => {
+  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
+    <label class="film-details__emoji-label" for="emoji-${emoji}">
+      <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji-${emoji}">
+    </label>`;
+};
+
+const createEmojisTemplate = () => {
+  return EMOJIS.map((emoji) => createEmojiItemTemplate(emoji)).join(``);
+};
+
 export const createFilmCommentsTemplate = (film) => {
 
   const createCommentsTemplate = () => {
     return film.comments.map((comment) => createCommentItemTemplate(comment)).join(``);
   };
 
-  const commentTemplate = createCommentsTemplate();
   const commentAmount = film.comments.length;
+  const commentTemplate = createCommentsTemplate();
+  const emojisTemplate = createEmojisTemplate();
 
   return (
     `<div class="form-details__bottom-container">
@@ -43,25 +57,7 @@ export const createFilmCommentsTemplate = (film) => {
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
+            ${emojisTemplate}
           </div>
         </div>
       </section>
