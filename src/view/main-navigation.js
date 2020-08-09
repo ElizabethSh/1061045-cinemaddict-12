@@ -1,7 +1,8 @@
 const createFilterItemTemplate = (filter) => {
+  const MAX_FILMS_AMOUNT = 5;
   const {name, count} = filter;
   return `<a href="#${name}" class="main-navigation__item">${name}
-      ${count < 5 ? `<span class="main-navigation__item-count">${count}</span>` : ``}
+      ${count < MAX_FILMS_AMOUNT ? `<span class="main-navigation__item-count">${count}</span>` : ``}
     </a>`;
 };
 
