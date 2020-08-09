@@ -1,5 +1,8 @@
 import {getRandomInteger} from "../utils.js";
+import {EMOJIS} from "../const.js";
 
+// функция генерации случайного индекса массива
+// возможно нужно будет потом удалить за ненадобностью!!!
 const generateIndex = (array) => {
   const index = getRandomInteger(0, array.length - 1);
   return index;
@@ -15,7 +18,6 @@ const generateFilmTitle = () => {
     `Made for Each Other`,
     `The Great Flamarion`
   ];
-
   return filmTitles[generateIndex(filmTitles)];
 };
 
@@ -29,7 +31,6 @@ const generatePoster = () => {
     `the-great-flamarion.jpg`,
     `the-man-with-the-golden-arm.jpg`
   ];
-
   return posters[generateIndex(posters)];
 };
 
@@ -67,8 +68,7 @@ const formatDate = (date) => {
 };
 
 const generateEmoji = () => {
-  const emojis = [`smile`, `sleeping`, `puke`, `angry`];
-  return emojis[generateIndex(emojis)];
+  return EMOJIS[generateIndex(EMOJIS)];
 };
 
 const generateCommentMessage = () => {
@@ -89,6 +89,7 @@ const generateAutorName = () => {
   return autorNames[generateIndex(autorNames)];
 };
 
+// функция генерации объекта комментария
 const generateComment = () => {
   const date = formatDate(generateDate());
   const emoji = generateEmoji();
@@ -102,18 +103,19 @@ const generateComment = () => {
   };
 };
 
+// функция генерации объекта для описания фильма
 export const generateFilm = () => {
   const title = generateFilmTitle();
-  const description = generateDescription();
   const poster = generatePoster();
+  const description = generateDescription();
   const maxCommentAmount = 5;
   const randomNumber = Math.round(Math.random() * maxCommentAmount);
   const comments = new Array(randomNumber).fill().map(generateComment);
 
   return {
-    title, // Название фильма
-    poster, // изображение постера фильма
-    description, // От 1 до 5 случайных предложений из текста
+    title,
+    poster,
+    description,
     comments,
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     isHistory: Boolean(getRandomInteger(0, 1)),
