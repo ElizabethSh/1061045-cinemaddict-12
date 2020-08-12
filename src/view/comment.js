@@ -1,4 +1,5 @@
 import {EMOJIS} from "../const.js";
+import {createElement} from "../utils.js";
 
 const createCommentItemTemplate = (comment) => {
   const {emoji, date, commentMessage, author} = comment;
@@ -30,7 +31,7 @@ const createEmojisTemplate = () => {
   return EMOJIS.map((emoji) => createEmojiItemTemplate(emoji)).join(``);
 };
 
-export const createFilmCommentsTemplate = (film) => {
+const createFilmCommentsTemplate = (film) => {
 
   const createCommentsTemplate = () => {
     return film.comments.map((comment) => createCommentItemTemplate(comment)).join(``);
@@ -64,3 +65,26 @@ export const createFilmCommentsTemplate = (film) => {
     </div>`
   );
 };
+
+export default class Comment {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  _getTemplate() {
+    return createFilmCommentsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
