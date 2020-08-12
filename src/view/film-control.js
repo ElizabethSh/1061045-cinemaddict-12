@@ -1,4 +1,6 @@
-export const createFilmDetailsControlsTemplate = () => {
+import {createElement} from "../utils.js";
+
+const createFilmInfoControlsTemplate = () => {
   return (
     `<section class="film-details__controls">
       <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
@@ -12,3 +14,25 @@ export const createFilmDetailsControlsTemplate = () => {
     </section>`
   );
 };
+
+export default class FilmInfoControl {
+  constructor() {
+    this._element = null;
+  }
+
+  _getTemplate() {
+    return createFilmInfoControlsTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
