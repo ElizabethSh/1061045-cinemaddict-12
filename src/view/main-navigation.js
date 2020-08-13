@@ -1,7 +1,8 @@
 import {createElement} from "../utils.js";
 
+const MAX_FILMS_AMOUNT = 5;
+
 const createFilterItemTemplate = (filter) => {
-  const MAX_FILMS_AMOUNT = 5;
   const {name, count} = filter;
   return `<a href="#${name}" class="main-navigation__item">${name}
       ${count < MAX_FILMS_AMOUNT ? `<span class="main-navigation__item-count">${count}</span>` : ``}
