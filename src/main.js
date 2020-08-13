@@ -21,9 +21,10 @@ const MAX_FILMS_CARD = 11; // 11, чтобы было видно как рабо
 const MAX_FILMS_PER_STEP = 5;
 const MAX_EXTRA_FILMS_CARD = 2;
 
-const siteHeader = document.querySelector(`.header`);
-const siteMain = document.querySelector(`.main`);
-const siteFooter = document.querySelector(`.footer`);
+const body = document.querySelector(`body`);
+const siteHeader = body.querySelector(`.header`);
+const siteMain = body.querySelector(`.main`);
+const siteFooter = body.querySelector(`.footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
 
 const films = new Array(MAX_FILMS_CARD).fill().map(generateFilm);
@@ -32,15 +33,56 @@ const filters = generateFilters(films);
 const renderFilmCard = (filmList, film) => {
   const filmCardComponent = new FilmCardView(film);
   const popupComponent = new PopupView(film);
+  const filmDetailComponent = popupComponent.getElement().querySelector(`.form-details__top-container`);
+  const filmInfoComponent = new FilmInfoView(film);
+  const filmInfoControlComponent = new FilmInfoControlView();
+  const commentComponent = new CommentView(film);
 
   const poster = filmCardComponent.getElement().querySelector(`.film-card__poster`);
   const title = filmCardComponent.getElement().querySelector(`.film-card__title`);
   const commentAmount = filmCardComponent.getElement().querySelector(`.film-card__comments`);
   const popupCloseButton = popupComponent.getElement().querySelector(`.film-details__close-btn`);
 
-  poster.addEventListener(`click`, () => {
+  const openPopup = () => {
+    body.appendChild(popupComponent.getElement());
+    render(filmDetailComponent, filmInfoComponent.getElement(), RenderPosition.BEFOREEND);
+    render(filmDetailComponent, filmInfoControlComponent.getElement(), RenderPosition.BEFOREEND);
+    render(filmDetailComponent, commentComponent.getElement(), RenderPosition.AFTEREND);
 
-  });
+    popupCloseButton.addEventListener(`click`, onCloseButtonClick);
+    poster.removeEventListener(`click`, onPosterClick);
+    title.removeEventListener(`click`, onTitleClick);
+    commentAmount.removeEventListener(`click`, onCommentAmountClick);
+  };
+
+  const closePopup = () => {
+    body.removeChild(popupComponent.getElement());
+
+    popupCloseButton.removeEventListener(`click`, onCloseButtonClick);
+    poster.addEventListener(`click`, onPosterClick);
+    title.addEventListener(`click`, onTitleClick);
+    commentAmount.addEventListener(`click`, onCommentAmountClick);
+  };
+
+  const onPosterClick = () => {
+    openPopup();
+  };
+
+  const onTitleClick = () => {
+    openPopup();
+  };
+
+  const onCommentAmountClick = () => {
+    openPopup();
+  };
+
+  const onCloseButtonClick = () => {
+    closePopup();
+  };
+
+  poster.addEventListener(`click`, onPosterClick);
+  title.addEventListener(`click`, onTitleClick);
+  commentAmount.addEventListener(`click`, onCommentAmountClick);
 
   render(filmList, filmCardComponent.getElement(), RenderPosition.BEFOREEND);
 };
@@ -109,11 +151,3 @@ extraFilmLists.forEach(function (it) {
 
 // footer
 render(footerStatistic, new StatisticView(films).getElement(), RenderPosition.BEFOREEND);
-
-// popup
-// const popup = new PopupView();
-// renderElement(siteFooter, popup.getElement(), RenderPosition.AFTEREND);
-// const filmInfo = popup.getElement().querySelector(`.form-details__top-container`);
-// renderElement(filmInfo, new FilmInfoView(films[0]).getElement(), RenderPosition.BEFOREEND);
-// renderElement(filmInfo, new FilmInfoControlView().getElement(), RenderPosition.BEFOREEND);
-// renderElement(filmInfo, new CommentView(films[0]).getElement(), RenderPosition.AFTEREND);
