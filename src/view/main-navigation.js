@@ -1,12 +1,15 @@
+import {createElement} from "../utils.js";
+
+const MAX_FILMS_AMOUNT = 5;
+
 const createFilterItemTemplate = (filter) => {
-  const MAX_FILMS_AMOUNT = 5;
   const {name, count} = filter;
   return `<a href="#${name}" class="main-navigation__item">${name}
       ${count < MAX_FILMS_AMOUNT ? `<span class="main-navigation__item-count">${count}</span>` : ``}
     </a>`;
 };
 
-export const createMainNavigationTemplate = (filters) => {
+const createMainNavigationTemplate = (filters) => {
   const filterTemplate = filters.map((filter) => createFilterItemTemplate(filter)).join(``);
   return (
     `<nav class="main-navigation">
@@ -18,3 +21,26 @@ export const createMainNavigationTemplate = (filters) => {
     </nav>`
   );
 };
+
+export default class MainNavigation {
+  constructor(filters) {
+    this._element = null;
+    this._filters = filters;
+  }
+
+  _getTemplate() {
+    return createMainNavigationTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

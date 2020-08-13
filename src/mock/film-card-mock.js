@@ -1,45 +1,53 @@
 import {getRandomInteger} from "../utils.js";
 import {EMOJIS} from "../const.js";
 
-// функция генерации случайного индекса массива
-// возможно нужно будет потом удалить за ненадобностью!!!
-const generateIndex = (array) => {
-  const index = getRandomInteger(0, array.length - 1);
-  return index;
-};
+const MAX_SENTENCES = 5;
+const TEXT = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus`;
+const MAX_DAY_GAP = 7;
+const MAX_COMMENT_AMOUNT = 5;
 
-const generateFilmTitle = () => {
-  const filmTitles = [
-    `The Dance of Life`,
-    `Sagebrush Trail`,
-    `The Man with the Golden Arm`,
-    `Santa Claus Conquers the Martians`,
-    `Popeye the Sailor Meets Sindbad the Sailor`,
-    `Made for Each Other`,
-    `The Great Flamarion`
-  ];
-  return filmTitles[generateIndex(filmTitles)];
-};
+// не стала переносить в модуль констант, чтобы потом не удалять оттуда
 
-const generatePoster = () => {
-  const posters = [
-    `made-for-each-other.png`,
-    `popeye-meets-sinbad.png`,
-    `sagebrush-trail.jpg`,
-    `santa-claus-conquers-the-martians.jpg`,
-    `the-dance-of-life.jpg`,
-    `the-great-flamarion.jpg`,
-    `the-man-with-the-golden-arm.jpg`
-  ];
-  return posters[generateIndex(posters)];
+const FILM_TITLES = [
+  `The Dance of Life`,
+  `Sagebrush Trail`,
+  `The Man with the Golden Arm`,
+  `Santa Claus Conquers the Martians`,
+  `Popeye the Sailor Meets Sindbad the Sailor`,
+  `Made for Each Other`,
+  `The Great Flamarion`
+];
+
+const POSTERS = [
+  `made-for-each-other.png`,
+  `popeye-meets-sinbad.png`,
+  `sagebrush-trail.jpg`,
+  `santa-claus-conquers-the-martians.jpg`,
+  `the-dance-of-life.jpg`,
+  `the-great-flamarion.jpg`,
+  `the-man-with-the-golden-arm.jpg`
+];
+
+const MESSAGES = [
+  `Interesting setting and a good cast`,
+  `Booooooooooring`,
+  `Very very old. Meh`,
+  `Almost two hours? Seriously?`
+];
+
+const AUTHOR_NAMES = [
+  `Tim Macoveev`,
+  `John Doe`,
+];
+
+const generateArrayElement = (array) => {
+  return array[getRandomInteger(0, array.length - 1)];
 };
 
 const generateDescription = () => {
-  const maxSentensies = 5;
-  const text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus`;
-  const sentencies = text.split(`.`);
+  const sentencies = TEXT.split(`.`);
   const indexes = [];
-  for (let i = 0; i < getRandomInteger(1, maxSentensies); i++) {
+  for (let i = 0; i < getRandomInteger(1, MAX_SENTENCES); i++) {
     indexes.push(getRandomInteger(0, sentencies.length - 1));
   }
   const description = [];
@@ -50,8 +58,7 @@ const generateDescription = () => {
 };
 
 const generateDate = () => {
-  const maxDayGap = 7;
-  const daysGap = getRandomInteger(0, maxDayGap);
+  const daysGap = getRandomInteger(0, MAX_DAY_GAP);
   const currentDate = new Date();
 
   currentDate.setDate(currentDate.getDate() - daysGap);
@@ -67,34 +74,12 @@ const formatDate = (date) => {
   return `${year}/${mm}/${dd} ${hour}:${minutes}`;
 };
 
-const generateEmoji = () => {
-  return EMOJIS[generateIndex(EMOJIS)];
-};
-
-const generateCommentMessage = () => {
-  const messages = [
-    `Interesting setting and a good cast`,
-    `Booooooooooring`,
-    `Very very old. Meh`,
-    `Almost two hours? Seriously?`
-  ];
-  return messages[generateIndex(messages)];
-};
-
-const generateAutorName = () => {
-  const autorNames = [
-    `Tim Macoveev`,
-    `John Doe`,
-  ];
-  return autorNames[generateIndex(autorNames)];
-};
-
 // функция генерации объекта комментария
 const generateComment = () => {
   const date = formatDate(generateDate());
-  const emoji = generateEmoji();
-  const commentMessage = generateCommentMessage();
-  const author = generateAutorName();
+  const emoji = generateArrayElement(EMOJIS);
+  const commentMessage = generateArrayElement(MESSAGES);
+  const author = generateArrayElement(AUTHOR_NAMES);
   return {
     emoji: `${emoji}.png`,
     commentMessage,
@@ -105,11 +90,10 @@ const generateComment = () => {
 
 // функция генерации объекта для описания фильма
 export const generateFilm = () => {
-  const title = generateFilmTitle();
-  const poster = generatePoster();
+  const title = generateArrayElement(FILM_TITLES);
+  const poster = generateArrayElement(POSTERS);
   const description = generateDescription();
-  const maxCommentAmount = 5;
-  const randomNumber = Math.round(Math.random() * maxCommentAmount);
+  const randomNumber = Math.round(Math.random() * MAX_COMMENT_AMOUNT);
   const comments = new Array(randomNumber).fill().map(generateComment);
 
   return {
