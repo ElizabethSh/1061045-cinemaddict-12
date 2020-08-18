@@ -15,7 +15,7 @@ import FilmInfoControlView from "./view/film-control.js";
 import CommentView from "./view/comment.js";
 import {generateFilm} from "./mock/film-card-mock";
 import {generateFilters} from "./mock/filter-mock";
-import {render, RenderPosition} from "./utils.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 
 const MAX_FILMS_CARD = 11; // 11, чтобы было видно как работают фильтры
 const MAX_FILMS_PER_STEP = 5;
@@ -38,72 +38,57 @@ const renderFilmCard = (filmList, film) => {
   const filmInfoControlComponent = new FilmInfoControlView();
   const commentComponent = new CommentView(film);
 
-  const poster = filmCardComponent.getElement().querySelector(`.film-card__poster`);
-  const title = filmCardComponent.getElement().querySelector(`.film-card__title`);
-  const commentAmount = filmCardComponent.getElement().querySelector(`.film-card__comments`);
-  const popupCloseButton = popupComponent.getElement().querySelector(`.film-details__close-btn`);
-
   const openPopup = () => {
     body.appendChild(popupComponent.getElement());
-    render(filmDetailComponent, filmInfoComponent.getElement(), RenderPosition.BEFOREEND);
-    render(filmDetailComponent, filmInfoControlComponent.getElement(), RenderPosition.BEFOREEND);
-    render(filmDetailComponent, commentComponent.getElement(), RenderPosition.AFTEREND);
+    render(filmDetailComponent, filmInfoComponent, RenderPosition.BEFOREEND);
+    render(filmDetailComponent, filmInfoControlComponent, RenderPosition.BEFOREEND);
+    render(filmDetailComponent, commentComponent, RenderPosition.AFTEREND);
 
-    popupCloseButton.addEventListener(`click`, onCloseButtonClick);
-    poster.removeEventListener(`click`, onPosterClick);
-    title.removeEventListener(`click`, onTitleClick);
-    commentAmount.removeEventListener(`click`, onCommentAmountClick);
+    // обработчик на кнопку закрытия попапа. Не выносить!
+    popupComponent.setClickHandler(() => {
+      closePopup();
+    });
   };
 
   const closePopup = () => {
     body.removeChild(popupComponent.getElement());
-
-    popupCloseButton.removeEventListener(`click`, onCloseButtonClick);
-    poster.addEventListener(`click`, onPosterClick);
-    title.addEventListener(`click`, onTitleClick);
-    commentAmount.addEventListener(`click`, onCommentAmountClick);
   };
 
-  const onPosterClick = () => {
+  // обработчик открытия попапа на постер
+  filmCardComponent.setPosterClickHandler(() => {
     openPopup();
-  };
+  });
 
-  const onTitleClick = () => {
+  // обработчик открытия попапа на title
+  filmCardComponent.setTitleClickHandler(() => {
     openPopup();
-  };
+  });
 
-  const onCommentAmountClick = () => {
+  // обработчик открытия попапа на кол-во комментариев в карточке
+  filmCardComponent.setCommentAmountClickHandler(() => {
     openPopup();
-  };
-
-  const onCloseButtonClick = () => {
-    closePopup();
-  };
-
-  poster.addEventListener(`click`, onPosterClick);
-  title.addEventListener(`click`, onTitleClick);
-  commentAmount.addEventListener(`click`, onCommentAmountClick);
+  });
 
   render(filmList, filmCardComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 // header
-render(siteHeader, new ProfileView().getElement(), RenderPosition.BEFOREEND);
+render(siteHeader, new ProfileView(), RenderPosition.BEFOREEND);
 
 // main
-render(siteMain, new MainNavigationView(filters).getElement(), RenderPosition.BEFOREEND);
-render(siteMain, new SortView().getElement(), RenderPosition.BEFOREEND);
+render(siteMain, new MainNavigationView(filters), RenderPosition.BEFOREEND);
+render(siteMain, new SortView(), RenderPosition.BEFOREEND);
 
 const siteContentComponent = new ContentView();
-render(siteMain, siteContentComponent.getElement(), RenderPosition.BEFOREEND);
+render(siteMain, siteContentComponent, RenderPosition.BEFOREEND);
 
 const filmsBoardComponent = new AllFilmSectionView();
-render(siteContentComponent.getElement(), filmsBoardComponent.getElement(), RenderPosition.AFTERBEGIN); // All films list
+render(siteContentComponent, filmsBoardComponent, RenderPosition.AFTERBEGIN); // All films list
 
 const AllFilmListComponent = new AllFilmListView();
-render(filmsBoardComponent.getElement(), AllFilmListComponent.getElement(), RenderPosition.BEFOREEND);
-render(siteContentComponent.getElement(), new TopRatedListView().getElement(), RenderPosition.BEFOREEND); // Top Rated films list
-render(siteContentComponent.getElement(), new MostCommentedListView().getElement(), RenderPosition.BEFOREEND);// Most commented films list
+render(filmsBoardComponent, AllFilmListComponent, RenderPosition.BEFOREEND);
+render(siteContentComponent, new TopRatedListView(), RenderPosition.BEFOREEND); // Top Rated films list
+render(siteContentComponent, new MostCommentedListView(), RenderPosition.BEFOREEND);// Most commented films list
 
 
 // создание карточек фильмов в разделе "Все фильмы"
@@ -129,17 +114,13 @@ if (films.length > MAX_FILMS_PER_STEP) {
 
     // если показаны все имеющиеся карточки, удаляет кнопку
     if (films.length <= renderedFilmAmount) {
-      showMoreButtonComponent.getElement().remove();
-      showMoreButtonComponent.removeElement(); // зачем?
+      remove(showMoreButtonComponent);
     }
   };
 
-  const onShowMoreButtonClick = (evt) => {
-    evt.preventDefault();
+  showMoreButtonComponent.setClickHandler(() => {
     showCards();
-  };
-
-  showMoreButtonComponent.getElement().addEventListener(`click`, onShowMoreButtonClick); // для дальнейшего удаления этого обработчика
+  });
 }
 
 const extraFilmLists = siteContentComponent.getElement().querySelectorAll(`.films-list--extra .films-list__container`);
