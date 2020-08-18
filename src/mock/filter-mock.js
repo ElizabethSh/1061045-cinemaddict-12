@@ -1,4 +1,4 @@
-import {capitalizeFirstLetter} from "../utils";
+import {capitalizeFirstLetter} from "../utils/common.js";
 
 const filmToFilterMap = {
   favorites: (films) => films.filter((film) => film.isFavorites).length,
