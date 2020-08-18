@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 import {EMOJIS} from "../const.js";
 
 const MAX_SENTENCES = 5;
