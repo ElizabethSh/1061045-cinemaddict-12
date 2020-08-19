@@ -9,7 +9,8 @@ const createPopupTemplate = () => {
             <button class="film-details__close-btn" type="button">close</button>
           </div>
         </div>
-      </form>`
+      </form>
+    </section>`
   );
 };
 
@@ -29,7 +30,8 @@ export default class Popup extends AbstractView {
   }
 
   setClickHandler(callback) {
+    const closeButton = this.getElement().querySelector(`.film-details__close-btn`);
     this._callback.click = callback;
-    this.getElement().addEventListener(`click`, this._clickHandler);
+    closeButton.addEventListener(`click`, this._clickHandler);
   }
 }
