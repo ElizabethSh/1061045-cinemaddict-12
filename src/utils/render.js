@@ -7,6 +7,8 @@ export const RenderPosition = {
 };
 
 export const render = (container, child, position) => {
+  // условия нужны, чтобы функция принимала не только DOM-элементы,
+  // но и компоненты
   if (container instanceof Abstract) {
     container = container.getElement();
   }
@@ -26,6 +28,8 @@ export const render = (container, child, position) => {
 };
 
 export const renderTemplate = (container, template, position) => {
+  // условие нужно, чтобы функция принимала не только DOM-элементы,
+  // но и компоненты
   if (container instanceof Abstract) {
     container = container.getElement();
   }
