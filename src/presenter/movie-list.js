@@ -18,6 +18,8 @@ export default class MovieList {
   constructor(container) {
     this._filmContainer = container;
     this._renderedFilmAmount = MAX_FILMS_PER_STEP;
+    this._topRatedListContainer = null;
+    this._mostCommentedListContainer = null;
 
     this._contentComponent = new ContentView();
     this._allFilmSectionComponent = new AllFilmSectionView();
@@ -25,7 +27,6 @@ export default class MovieList {
     this._mostCommentedFilmsComponent = new MostCommentedListView();
     this._allFilmListComponent = new AllFilmListView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
-
     this._noTaskComponent = new NoTaskView();
 
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
@@ -33,14 +34,17 @@ export default class MovieList {
 
   // Метод для инициализации (начала работы) модуля
   init(films) {
+    this._topRatedListContainer = this._topRatedFilmsComponent.getElement().querySelector(`.films-list__container`);
+    this._mostCommentedListContainer = this._mostCommentedFilmsComponent.getElement().querySelector(`.films-list__container`);
     this._films = films.slice();
 
-    // рендерим контент со всеми разделами фильмов
+    // если фильмов нет, рендерим заглушку
     if (films.length === 0) {
       this._renderNoFilms();
       return;
     }
 
+    // рендерим контент со всеми разделами фильмов
     render(this._filmContainer, this._contentComponent, RenderPosition.BEFOREEND);
     this._renderFilmContent();
   }
@@ -103,14 +107,10 @@ export default class MovieList {
   // метод для инициализации (начала работы) модуля
   _renderFilmContent() {
     render(this._contentComponent, this._allFilmSectionComponent, RenderPosition.BEFOREEND);
+    this._renderAllFilmList();
     this._renderTopRatedList();
     this._renderMostCommentedList();
 
-    this._renderAllFilmList();
-
-    if (this._films.length > MAX_FILMS_PER_STEP) {
-      this._renderShowMoreButton();
-    }
   }
 
   // метод для рендеринга раздела со всеми фильмами
@@ -118,24 +118,22 @@ export default class MovieList {
     render(this._allFilmSectionComponent, this._allFilmListComponent, RenderPosition.BEFOREEND);
 
     this._renderFilmCards(0, Math.min(this._films.length, MAX_FILMS_PER_STEP), this._allFilmListComponent);
+
+    if (this._films.length > MAX_FILMS_PER_STEP) {
+      this._renderShowMoreButton();
+    }
   }
 
   // метод для рендеринга раздела Top Rated
   _renderTopRatedList() {
     render(this._contentComponent, this._topRatedFilmsComponent, RenderPosition.BEFOREEND);
-
-    const topRatedListContainer = this._topRatedFilmsComponent.getElement().querySelector(`.films-list__container`);
-
-    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), topRatedListContainer);
+    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), this._topRatedListContainer);
   }
 
   // метод для рендеринга раздела Most Commented
   _renderMostCommentedList() {
     render(this._contentComponent, this._mostCommentedFilmsComponent, RenderPosition.BEFOREEND);
-
-    const mostCommentedListContainer = this._mostCommentedFilmsComponent.getElement().querySelector(`.films-list__container`);
-
-    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), mostCommentedListContainer);
+    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), this._mostCommentedListContainer);
   }
 
 }
