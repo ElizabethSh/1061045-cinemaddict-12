@@ -1,34 +1,19 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
+import {SortType} from "../const.js";
 
 const createFilmsSortingTemplate = () => {
   return (
     `<ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-      <li><a href="#" class="sort__button">Sort by date</a></li>
-      <li><a href="#" class="sort__button">Sort by rating</a></li>
+      <li><a href="#" class="sort__button sort__button--active" data-sort-type = "${SortType.DEFAULT}">Sort by default</a></li>
+      <li><a href="#" class="sort__button" data-sort-type = "${SortType.DATE}">Sort by date</a></li>
+      <li><a href="#" class="sort__button" data-sort-type = "${SortType.RATING}">Sort by rating</a></li>
     </ul>`
   );
 };
 
-export default class Sort {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Sort extends AbstractView {
   _getTemplate() {
     return createFilmsSortingTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
