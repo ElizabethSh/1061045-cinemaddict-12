@@ -19,7 +19,6 @@ export default class Popup {
   init(film) {
     this._film = film;
     this._renderPopup(film);
-    this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
   }
 
   // метод рендеринга самого попапа без разделов
