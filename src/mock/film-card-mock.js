@@ -5,6 +5,7 @@ const MAX_SENTENCES = 5;
 const TEXT = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus`;
 const MAX_DAY_GAP = 7;
 const MAX_COMMENT_AMOUNT = 5;
+const MAX_RATING = 10;
 
 // не стала переносить в модуль констант, чтобы потом не удалять оттуда
 
@@ -57,6 +58,10 @@ const generateDescription = () => {
   return description.join(`.`);
 };
 
+const generateRating = () => {
+  return (getRandomInteger(0, MAX_RATING - 1) + Math.random()).toFixed(1);
+};
+
 const generateDate = () => {
   const daysGap = getRandomInteger(0, MAX_DAY_GAP);
   const currentDate = new Date();
@@ -95,11 +100,13 @@ export const generateFilm = () => {
   const description = generateDescription();
   const randomNumber = Math.round(Math.random() * MAX_COMMENT_AMOUNT);
   const comments = new Array(randomNumber).fill().map(generateComment);
+  const rating = generateRating();
 
   return {
     title,
     poster,
     description,
+    rating,
     comments,
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     isHistory: Boolean(getRandomInteger(0, 1)),
