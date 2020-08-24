@@ -1,8 +1,8 @@
 import ProfileView from "./view/profile.js";
 import MainNavigationView from "./view/main-navigation.js";
-import SortView from "./view/sort.js";
 import ContentView from "./view/content.js";
 import StatisticView from "./view/statistic.js";
+import SortPresenter from "./presenter/sort.js";
 import ExtraListPresenter from "./presenter/extra-list.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import NoTaskView from "./view/no-film.js";
@@ -24,6 +24,7 @@ const mostCommentedFilms = films.slice();
 
 const contentComponent = new ContentView();
 const contentContainer = contentComponent.getElement();
+const sortComponent = new SortPresenter(siteMain);
 const movieListPresenter = new MovieListPresenter(contentContainer);
 const noTaskComponent = new NoTaskView();
 // console.log(films);
@@ -40,16 +41,16 @@ render(siteHeader, new ProfileView(), RenderPosition.BEFOREEND);
 render(siteMain, new MainNavigationView(filters), RenderPosition.BEFOREEND);
 
 // рендерит сортировку
-render(siteMain, new SortView(), RenderPosition.BEFOREEND);
+sortComponent.init(films);
 
 // рендерит контент
 if (films.length === 0) {
   // если фильмов нет, рендерим заглушку
   render(siteMain, noTaskComponent, RenderPosition.BEFOREEND);
 }
-
 // иначе отобрази контент с фильмами
 render(siteMain, contentComponent, RenderPosition.BEFOREEND);
+
 
 // рендерит контент с разделом всех фильмов
 movieListPresenter.init(films);
