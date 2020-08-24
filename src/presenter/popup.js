@@ -13,26 +13,35 @@ export default class Popup {
 
     this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
   // Метод для инициализации (начала работы) модуля
   init(film) {
     this._film = film;
-    this._renderPopup(film);
+    this._render(film);
   }
 
   // метод рендеринга самого попапа без разделов
-  _renderPopup(film) {
+  _render(film) {
     render(this._popupContainer, this._popupComponent, RenderPosition.BEFOREEND);
 
     this._popupComponent.setClickHandler(this._handleCloseButtonClick);
+    document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._renderFilmDetails(film);
   }
 
   // callback, который запишется в объект callback в popupView,
   // и вызовется при клике на кнопку закрытия попапа
   _handleCloseButtonClick() {
-    this._popupContainer.removeChild(this._popupComponent.getElement());
+    this._remove();
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this._remove();
+    }
   }
 
   // метод для рендеринга разделов попапа
@@ -57,5 +66,10 @@ export default class Popup {
   _renderFilmComment(film) {
     this._filmCommentComponent = new CommentView(film);
     render(this._filmInfoContainer, this._filmCommentComponent, RenderPosition.AFTEREND);
+  }
+
+  _remove() {
+    this._popupContainer.removeChild(this._popupComponent.getElement());
+    document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 }
