@@ -12,12 +12,13 @@ export default class FilmCard {
   init(film) {
     this._film = film;
     this._filmCardComponent = new FilmCardView(film);
-    this._renderFilmCard(film);
+
+    this._render(film);
   }
 
-  _renderFilmCard(film) {
+  _render(film) {
     const popup = new PopupPresenter(body);
-    render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
+
     // обработчик открытия попапа на постер
     this._filmCardComponent.setPosterClickHandler(() => {
       popup.init(film);
@@ -32,5 +33,7 @@ export default class FilmCard {
     this._filmCardComponent.setCommentAmountClickHandler(() => {
       popup.init(film);
     });
+
+    render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
   }
 }
