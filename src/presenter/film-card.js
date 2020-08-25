@@ -17,23 +17,26 @@ export default class FilmCard {
   }
 
   _render(film) {
-    const popup = new PopupPresenter(body);
-
     // обработчик открытия попапа на постер
     this._filmCardComponent.setPosterClickHandler(() => {
-      popup.init(film);
+      this._renderPopup(film);
     });
 
     // обработчик открытия попапа на title
     this._filmCardComponent.setTitleClickHandler(() => {
-      popup.init(film);
+      this._renderPopup(film);
     });
 
     // обработчик открытия попапа на кол-во комментариев в карточке
     this._filmCardComponent.setCommentAmountClickHandler(() => {
-      popup.init(film);
+      this._renderPopup(film);
     });
 
     render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderPopup(film) {
+    const popup = new PopupPresenter(body);
+    popup.init(film);
   }
 }
