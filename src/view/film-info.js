@@ -1,7 +1,9 @@
 import AbstractView from "./abstract.js";
+import {humanizeReleaseData} from "../utils/common.js";
 
 const createFilmInfoTemplate = (film) => {
-  const {title, description, poster} = film;
+  const {title, description, poster, rating, releaseDate} = film;
+  const releaseFilmDate = humanizeReleaseData(releaseDate);
   return (
     `<div class="film-details__info-wrap">
       <div class="film-details__poster">
@@ -18,7 +20,7 @@ const createFilmInfoTemplate = (film) => {
           </div>
 
           <div class="film-details__rating">
-            <p class="film-details__total-rating">8.9</p>
+            <p class="film-details__total-rating">${rating}</p>
           </div>
         </div>
 
@@ -37,7 +39,7 @@ const createFilmInfoTemplate = (film) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">30 March 1945</td>
+            <td class="film-details__cell">${releaseFilmDate}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
