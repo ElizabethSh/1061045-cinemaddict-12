@@ -46,6 +46,8 @@ const generateArrayElement = (array) => {
   return array[getRandomInteger(0, array.length - 1)];
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const generateDescription = () => {
   const sentencies = TEXT.split(`.`);
   const indexes = [];
@@ -113,6 +115,7 @@ export const generateFilm = () => {
   const releaseDate = generateFilmDate();
 
   return {
+    id: generateId(),
     title,
     poster,
     description,
