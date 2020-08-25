@@ -1,5 +1,4 @@
 import SortView from "../view/sort.js";
-import MovieListPresenter from "../presenter/movie-list.js";
 import ContentView from "../view/content.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {SortType} from "../const.js";
@@ -27,25 +26,23 @@ export default class Sort {
     switch (sortType) {
       case SortType.DATE:
         this._boardFilms.sort(sortByDate);
-        console.log(this._boardFilms);
+        // console.log(this._boardFilms);
         break;
 
       case SortType.RATING:
         this._boardFilms.sort(sortByRating);
-        console.log(this._boardFilms);
+        // console.log(this._boardFilms);
         break;
 
       default:
         this._boardFilms = this._sourcedFilms.slice();
-        console.log(`default`);
+        // console.log(`default`);
     }
 
     this._curentSortType = sortType;
   }
 
   _handleSortTypeChange(sortType) {
-    const movieListPresenter = new MovieListPresenter();
-    console.log(movieListPresenter);
     // если выбранная сортировка совпадает с текущей, ничего не делай
     if (this._curentSortType === sortType) {
       return;
@@ -53,10 +50,8 @@ export default class Sort {
     // - Сортируем задачи
     this._sortFilms(sortType);
     // - Очищаем список
-    movieListPresenter.clearFilmList();
 
     // - Рендерим список заново
-    movieListPresenter.renderAllFilmList();
 
   }
 

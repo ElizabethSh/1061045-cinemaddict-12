@@ -65,16 +65,28 @@ export default class MovieList {
     this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
   }
 
-  // метод для инициализации (начала работы) модуля
+  // метод для рендеринга section в контенте со всеми разделами фильмов
   _renderFilmContent() {
     render(this._filmContainer, this._allFilmSectionComponent, RenderPosition.BEFOREEND);
-    this._renderAllFilmList();
+    this._renderAllFilmContainer();
+  }
+
+  // метод ля рендеринга раздела div class="films-list__container"
+  _renderAllFilmContainer() {
+    render(this._allFilmSectionComponent, this._allFilmListComponent, RenderPosition.BEFOREEND);
+    this.renderAllFilmList();
+  }
+
+  // метод для удаления всех карточек внутри div class="films-list__container"
+  clearFilmList() {
+    // console.log(this._allFilmListComponent.getElement().childNodes);
+    this._allFilmListComponent.getElement().innerHTML = ` `;
+    // console.log(this._allFilmListComponent.getElement().childNodes);
+    this._renderedFilmAmount = MAX_FILMS_PER_STEP;
   }
 
   // метод для рендеринга раздела со всеми фильмами
-  _renderAllFilmList() {
-    render(this._allFilmSectionComponent, this._allFilmListComponent, RenderPosition.BEFOREEND);
-
+  renderAllFilmList() {
     this._renderFilmCards(0, Math.min(this._films.length, MAX_FILMS_PER_STEP), this._allFilmListComponent);
 
     if (this._films.length > MAX_FILMS_PER_STEP) {
