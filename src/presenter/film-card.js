@@ -1,12 +1,13 @@
 import FilmCardView from "../view/film-card.js";
 import PopupPresenter from "../presenter/popup.js";
-import {render, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
 
 const body = document.querySelector(`body`);
 
 export default class FilmCard {
-  constructor(container) {
+  constructor(container, changeData) {
     this._filmCardContainer = container;
+    this._changeData = changeData;
   }
 
   init(film) {
@@ -14,6 +15,10 @@ export default class FilmCard {
     this._filmCardComponent = new FilmCardView(film);
 
     this._render(film);
+  }
+
+  destroy() {
+    remove(this._filmCardComponent);
   }
 
   _render(film) {
