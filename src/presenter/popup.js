@@ -8,10 +8,8 @@ export default class Popup {
   constructor(container) {
     this._popupContainer = container;
 
-    this._popupComponent = new PopupView();
     this._infoControlComponent = new FilmInfoControlView();
 
-    this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
@@ -19,6 +17,9 @@ export default class Popup {
   // Метод для инициализации (начала работы) модуля
   init(film) {
     this._film = film;
+    this._popupComponent = new PopupView();
+    this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
+
     this._render(film);
   }
 
