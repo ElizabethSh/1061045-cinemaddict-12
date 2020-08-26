@@ -56,10 +56,6 @@ export default class FilmCard {
       this._renderPopup(film);
     });
 
-    this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmCardComponent.setAlreadyWatchedHandler(this._handleAlreadyWatchedClick);
-    this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-
     render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
   }
 
