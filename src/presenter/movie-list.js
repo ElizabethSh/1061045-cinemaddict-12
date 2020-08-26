@@ -55,7 +55,7 @@ export default class MovieList {
     // подставляем обновленный элемент в массивы с фильмами
     // на замену предыдущему
     this._films = updateItem(this._films, updatedFilm);
-    this._sourcedFilms = updatedFilm(this._sourcedFilms, updatedFilm);
+    this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
 
     // для обновленного презентера фильма пересоздаем карточку
     this._filmPresenter[updatedFilm.id].init(updatedFilm);
@@ -84,8 +84,8 @@ export default class MovieList {
   _renderMovieFilmContent() {
     render(this._filmContainer, this._contentComponent, RenderPosition.BEFOREEND);
     this._renderFilmtListContent();
-    this._renderTopRatedList();
-    this._renderMostCommentedList();
+    // this._renderTopRatedList();
+    // this._renderMostCommentedList();
   }
 
   // метод для рендеринга section class="films-list"
@@ -133,6 +133,7 @@ export default class MovieList {
     const filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleFilmUpdate);
     filmCardPresenter.init(film);
     this._filmPresenter[film.id] = filmCardPresenter;
+    console.log(this._filmPresenter);
   }
 
   // метод по рендерингу кнопки допоказа карточек фильмов
