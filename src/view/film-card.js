@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import SmartView from "./smart.js";
 
 const createFilmCardTemplate = (film) => {
   const {title, description, poster, rating, releaseDate, isWatchlist, isHistory, isFavorites} = film;
@@ -38,10 +38,13 @@ const createFilmCardTemplate = (film) => {
   );
 };
 
-export default class FilmCard extends AbstractView {
+export default class FilmCard extends SmartView {
   constructor(film) {
     super();
+    // this._data = {}; - пришло из SmartView
+
     this._film = film;
+    // this._data = film; //  ????
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
     this._commentAmountClickHandler = this._commentAmountClickHandler.bind(this);
@@ -50,33 +53,6 @@ export default class FilmCard extends AbstractView {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
 
     this._setInnerHandlers();
-  }
-
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._film = Object.assign(
-        {},
-        this._film,
-        update
-    );
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    let prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    prevElement = null; // Чтобы окончательно "убить" ссылку на prevElement
-
-    this.restoreHandlers();
   }
 
   restoreHandlers() {
@@ -160,6 +136,4 @@ export default class FilmCard extends AbstractView {
     this._callback.commentAmountClick = callback;
     this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, this._commentAmountClickHandler);
   }
-
 }
-
