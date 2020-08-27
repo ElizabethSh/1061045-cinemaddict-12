@@ -3,12 +3,13 @@ import FilmInfoView from "../view/film-info.js";
 import FilmInfoControlView from "../view/film-control.js";
 import CommentView from "../view/comment.js";
 import {render, RenderPosition} from "../utils/render.js";
+import {Mode} from "../const.js";
 
 export default class Popup {
   constructor(container) {
     this._popupContainer = container;
 
-    this._infoControlComponent = new FilmInfoControlView();
+    this._popupComponent = null;
 
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -29,48 +30,52 @@ export default class Popup {
 
     this._popupComponent.setClickHandler(this._handleCloseButtonClick);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+    this._mode = Mode.POPUP;
+
     this._renderFilmDetails(film);
-  }
-
-  // callback, который запишется в объект callback в popupView,
-  // и вызовется при клике на кнопку закрытия попапа
-  _handleCloseButtonClick() {
-    this._remove();
-  }
-
-  _escKeyDownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
-      this._remove();
-    }
   }
 
   // метод для рендеринга разделов попапа
   _renderFilmDetails(film) {
     this._renderFilmInfo(film);
-    this._renderFilmControl();
+    this._renderFilmControl(film);
     this._renderFilmComment(film);
   }
 
   // метод для рендеринга информации о фильме
   _renderFilmInfo(film) {
-    this._filmInfoComponent = new FilmInfoView(film);
-    render(this._filmInfoContainer, this._filmInfoComponent, RenderPosition.BEFOREEND);
+    const filmInfoComponent = new FilmInfoView(film);
+    render(this._filmInfoContainer, filmInfoComponent, RenderPosition.BEFOREEND);
   }
 
   // метод для рендеринга кнопок под информацией о фильме
-  _renderFilmControl() {
-    render(this._filmInfoContainer, this._infoControlComponent, RenderPosition.BEFOREEND);
+  _renderFilmControl(film) {
+    const infoControlComponent = new FilmInfoControlView(film);
+    render(this._filmInfoContainer, infoControlComponent, RenderPosition.BEFOREEND);
   }
 
   // метод для рендеринга комментариев
   _renderFilmComment(film) {
-    this._filmCommentComponent = new CommentView(film);
-    render(this._filmInfoContainer, this._filmCommentComponent, RenderPosition.AFTEREND);
+    const filmCommentComponent = new CommentView(film);
+    render(this._filmInfoContainer, filmCommentComponent, RenderPosition.AFTEREND);
   }
 
-  _remove() {
+  remove() {
     this._popupContainer.removeChild(this._popupComponent.getElement());
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this.remove();
+    }
+  }
+
+  // callback, который запишется в объект callback в popupView,
+  // и вызовется при клике на кнопку закрытия попапа
+  _handleCloseButtonClick() {
+    this.remove();
   }
 }
