@@ -1,14 +1,19 @@
 import FilmCardView from "../view/film-card.js";
 import PopupPresenter from "../presenter/popup.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {Mode} from "../const.js";
 
 const body = document.querySelector(`body`);
 
 export default class FilmCard {
-  constructor(container, changeData) {
+  constructor(container, changeData, changeMode) {
     this._filmCardContainer = container;
     this._changeData = changeData;
+    this._changeMode = changeMode;
+
     this._filmCardComponent = null;
+    this._popup = null;
+    this._mode = Mode.DEFAULT;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleAlreadyWatchedClick = this._handleAlreadyWatchedClick.bind(this);
@@ -17,6 +22,7 @@ export default class FilmCard {
 
   init(film) {
     this._film = film;
+    this._popup = new PopupPresenter(body);
 
     const prevFilmCardComponent = this._filmCardComponent;
 
@@ -29,11 +35,17 @@ export default class FilmCard {
     }
 
     // иначе, замени предыдущую карточку на обновленную
-    if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
     remove(prevFilmCardComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._popup.remove();
+    }
   }
 
   destroy() {
@@ -60,8 +72,9 @@ export default class FilmCard {
   }
 
   _renderPopup(film) {
-    const popup = new PopupPresenter(body);
-    popup.init(film);
+    this._popup.init(film);
+    this._changeMode();
+    this._mode = Mode.POPUP;
   }
 
   _handleWatchlistClick() {
