@@ -14,6 +14,7 @@ import {SortType} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 
 const MAX_FILMS_PER_STEP = 5;
+const MAX_EXTRA_FILMS_CARD = 2;
 const TOP_RATED_TITLE = `Top Rated`;
 const MOST_COMMENT_TITLE = `Most commented`;
 
@@ -36,6 +37,7 @@ export default class MovieList {
     this._handleFilmUpdate = this._handleFilmUpdate.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   // Метод для инициализации (начала работы) модуля
@@ -122,18 +124,18 @@ export default class MovieList {
   }
 
   // метод для рендеринга N-карточек за раз
-  _renderFilmCards(from, to) {
+  _renderFilmCards(from, to, container) {
     this._films
       .slice(from, to)
-      .forEach((film) => this._renderFilmCard(film));
+      .forEach((film) => this._renderFilmCard(film, container));
   }
 
   // метод для рендеринга компонентов карточки с фильмом
-  _renderFilmCard(film) {
-    const filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleFilmUpdate);
+  _renderFilmCard(film, container) {
+    const filmCardPresenter = new FilmCardPresenter(container, this._handleFilmUpdate, this._handleModeChange);
     filmCardPresenter.init(film);
     this._filmPresenter[film.id] = filmCardPresenter;
-    console.log(this._filmPresenter);
+    // console.log(this._filmPresenter);
   }
 
   // метод по рендерингу кнопки допоказа карточек фильмов
@@ -147,25 +149,33 @@ export default class MovieList {
 
   // рендерит Top Rated раздел
   _renderTopRatedList() {
-    const topRatedFilms = this._films.slice();
+    const topRatedListContainer = this._topRatedListComponent.getContainer();
+    // const topRatedFilms = this._films.slice();
 
-    topRatedFilms.sort(sortByRating);
-    this._topRatedListComponent.init(topRatedFilms);
+    // topRatedFilms.sort(sortByRating);
+
+    this._topRatedListComponent.init(this._films);
+    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), topRatedListContainer);
   }
 
   // рендерит Most Commented раздел
   _renderMostCommentedList() {
+    const mostCommentedListContainer = this._mostCommentedListComponent.getContainer();
+
     this._mostCommentedListComponent.init(this._films);
+    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), mostCommentedListContainer);
   }
 
   _sortFilms(sortType) {
     switch (sortType) {
       case SortType.DATE:
         this._films.sort(sortByDate);
+        // console.log(this._films);
         break;
 
       case SortType.RATING:
         this._films.sort(sortByRating);
+        // console.log(this._films);
         break;
 
       default:
@@ -175,9 +185,14 @@ export default class MovieList {
     this._curentSortType = sortType;
   }
 
+  _handleModeChange() {
+    Object.values(this._filmPresenter)
+          .forEach((presenter) => presenter.resetView());
+  }
+
   // функция обработчик для кнопки Show More
   _handleShowMoreButtonClick() {
-    this._renderFilmCards(this._renderedFilmAmount, this._renderedFilmAmount + MAX_FILMS_PER_STEP);
+    this._renderFilmCards(this._renderedFilmAmount, this._renderedFilmAmount + MAX_FILMS_PER_STEP, this._allFilmListComponent);
     this._renderedFilmAmount += MAX_FILMS_PER_STEP;
 
     // если показаны все имеющиеся карточки, удаляет кнопку
@@ -204,6 +219,7 @@ export default class MovieList {
 
   // метод для удаления всех карточек внутри div class="films-list__container"
   _clearFilmList() {
+    // console.log(`2`, this._filmPresenter);
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -211,7 +227,9 @@ export default class MovieList {
     // нужно очистить _filmPresenter, т.к. destroy удаляет карточки
     // но не очищает этот объект _filmPresenter и при пересортировке
     // просто дозапишет в этот объект эти же фильмы еще раз
+    // console.log(`3`, this._filmPresenter);
     this._filmPresenter = {};
+    // console.log(`4`, this._filmPresenter);
 
     this._renderedFilmAmount = MAX_FILMS_PER_STEP;
   }
