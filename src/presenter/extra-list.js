@@ -10,8 +10,6 @@ export default class ExtraList {
     this._header = header;
     this._extraListComponent = new ExtraListView(this._header);
     this._extraListContainer = this._extraListComponent.getElement().querySelector(`.films-list__container`);
-    this._filmCardComponent = new FilmCardPresenter(this._extraListContainer);
-
   }
 
   init(films) {
@@ -31,7 +29,7 @@ export default class ExtraList {
   }
 
   _renderFilmCard(film) {
-    this._filmCardComponent.init(film);
+    const filmCardPresenter = new FilmCardPresenter(this._extraListContainer);
+    filmCardPresenter.init(film);
   }
-
 }
