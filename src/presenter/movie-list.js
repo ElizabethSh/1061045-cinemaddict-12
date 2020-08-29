@@ -14,7 +14,6 @@ import {SortType} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 
 const MAX_FILMS_PER_STEP = 5;
-const MAX_EXTRA_FILMS_CARD = 2;
 const TOP_RATED_TITLE = `Top Rated`;
 const MOST_COMMENT_TITLE = `Most commented`;
 
@@ -34,7 +33,7 @@ export default class MovieList {
     this._allFilmListComponent = new AllFilmListView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
 
-    this._handleFilmUpdate = this._handleFilmUpdate.bind(this);
+    this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
@@ -43,6 +42,7 @@ export default class MovieList {
   // Метод для инициализации (начала работы) модуля
   init(films) {
     this._films = films.slice();
+    console.log(this._films);
     this._sourcedFilms = films.slice(); // бэкап исходного массива
     this._filters = generateFilters(this._films);
     this._mainNavigationComponent = new MainNavigationView(this._filters);
@@ -53,10 +53,11 @@ export default class MovieList {
   }
 
   // метод для перерендеринга карточки обновленного фильма
-  _handleFilmUpdate(updatedFilm) {
+  _handleFilmChange(updatedFilm) {
     // подставляем обновленный элемент в массивы с фильмами
     // на замену предыдущему
     this._films = updateItem(this._films, updatedFilm);
+    console.log(this._films);
     this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
 
     // для обновленного презентера фильма пересоздаем карточку
@@ -67,7 +68,13 @@ export default class MovieList {
   _renderMovieList() {
     this._renderMainNavigation();
     this._renderSort();
-    this._renderMovieFilmContent();
+
+    // рендер <section class="films" (секция после сортировки)
+    // со всеми разделами фильмов
+    render(this._filmContainer, this._contentComponent, RenderPosition.BEFOREEND);
+    this._renderFilmtListContent();
+    this._renderTopRatedList();
+    this._renderMostCommentedList();
   }
 
   // метод для рендеринга главного меню
@@ -79,15 +86,6 @@ export default class MovieList {
   _renderSort() {
     render(this._filmContainer, this._sortComponent, RenderPosition.BEFOREEND);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-  }
-
-  // метод для рендеринга <section class="films"
-  // (секция после сортировки) со всеми разделами фильмов
-  _renderMovieFilmContent() {
-    render(this._filmContainer, this._contentComponent, RenderPosition.BEFOREEND);
-    this._renderFilmtListContent();
-    // this._renderTopRatedList();
-    // this._renderMostCommentedList();
   }
 
   // метод для рендеринга section class="films-list"
@@ -116,7 +114,7 @@ export default class MovieList {
 
   // метод для рендеринга раздела со всеми фильмами
   _renderAllFilmList() {
-    this._renderFilmCards(0, Math.min(this._films.length, MAX_FILMS_PER_STEP), this._allFilmListComponent);
+    this._renderFilmCards(0, Math.min(this._films.length, MAX_FILMS_PER_STEP));
 
     if (this._films.length > MAX_FILMS_PER_STEP) {
       this._renderShowMoreButton();
@@ -124,16 +122,18 @@ export default class MovieList {
   }
 
   // метод для рендеринга N-карточек за раз
-  _renderFilmCards(from, to, container) {
+  _renderFilmCards(from, to) {
     this._films
       .slice(from, to)
-      .forEach((film) => this._renderFilmCard(film, container));
+      .forEach((film) => this._renderFilmCard(film));
   }
 
   // метод для рендеринга компонентов карточки с фильмом
-  _renderFilmCard(film, container) {
-    const filmCardPresenter = new FilmCardPresenter(container, this._handleFilmUpdate, this._handleModeChange);
+  _renderFilmCard(film) {
+    const filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleFilmChange/*, this._handleModeChange*/);
     filmCardPresenter.init(film);
+
+    // сохраняет в observer все фильмы с ключами = id
     this._filmPresenter[film.id] = filmCardPresenter;
     // console.log(this._filmPresenter);
   }
@@ -149,33 +149,25 @@ export default class MovieList {
 
   // рендерит Top Rated раздел
   _renderTopRatedList() {
-    const topRatedListContainer = this._topRatedListComponent.getContainer();
-    // const topRatedFilms = this._films.slice();
+    const topRatedFilms = this._films.slice();
+    topRatedFilms.sort(sortByRating);
 
-    // topRatedFilms.sort(sortByRating);
-
-    this._topRatedListComponent.init(this._films);
-    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), topRatedListContainer);
+    this._topRatedListComponent.init(topRatedFilms);
   }
 
   // рендерит Most Commented раздел
   _renderMostCommentedList() {
-    const mostCommentedListContainer = this._mostCommentedListComponent.getContainer();
-
     this._mostCommentedListComponent.init(this._films);
-    this._renderFilmCards(0, Math.min(this._films.length, MAX_EXTRA_FILMS_CARD), mostCommentedListContainer);
   }
 
   _sortFilms(sortType) {
     switch (sortType) {
       case SortType.DATE:
         this._films.sort(sortByDate);
-        // console.log(this._films);
         break;
 
       case SortType.RATING:
         this._films.sort(sortByRating);
-        // console.log(this._films);
         break;
 
       default:
@@ -219,7 +211,6 @@ export default class MovieList {
 
   // метод для удаления всех карточек внутри div class="films-list__container"
   _clearFilmList() {
-    // console.log(`2`, this._filmPresenter);
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -227,10 +218,7 @@ export default class MovieList {
     // нужно очистить _filmPresenter, т.к. destroy удаляет карточки
     // но не очищает этот объект _filmPresenter и при пересортировке
     // просто дозапишет в этот объект эти же фильмы еще раз
-    // console.log(`3`, this._filmPresenter);
     this._filmPresenter = {};
-    // console.log(`4`, this._filmPresenter);
-
     this._renderedFilmAmount = MAX_FILMS_PER_STEP;
   }
 }
