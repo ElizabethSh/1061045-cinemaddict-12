@@ -6,10 +6,11 @@ import {Mode} from "../const.js";
 const body = document.querySelector(`body`);
 
 export default class FilmCard {
-  constructor(container, changeData, changeMode) {
+  constructor(container, changeData/*, changeMode*/) {
     this._filmCardContainer = container;
+
     this._changeData = changeData;
-    this._changeMode = changeMode;
+    // this._changeMode = changeMode;
 
     this._filmCardComponent = null;
     this._popup = null;
@@ -28,6 +29,10 @@ export default class FilmCard {
 
     this._filmCardComponent = new FilmCardView(film);
 
+    this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._filmCardComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
+    this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
     // если карточка фильма рисуется первый раз, просто отрисуй
     if (prevFilmCardComponent === null) {
       this._render(film);
@@ -35,7 +40,8 @@ export default class FilmCard {
     }
 
     // иначе, замени предыдущую карточку на обновленную
-    if (this._mode === Mode.DEFAULT) {
+    // if (this._mode === Mode.DEFAULT) {
+    if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
@@ -73,8 +79,8 @@ export default class FilmCard {
 
   _renderPopup(film) {
     this._popup.init(film);
-    this._changeMode();
-    this._mode = Mode.POPUP;
+    // this._changeMode();
+    // this._mode = Mode.POPUP;
   }
 
   _handleWatchlistClick() {
