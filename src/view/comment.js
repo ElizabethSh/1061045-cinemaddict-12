@@ -70,9 +70,28 @@ export default class Comment extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
+
+    this._emojiClickHandler = this._emojiClickHandler.bind(this);
+
+    this.getElement()
+        .querySelector(`.film-details__emoji-list`)
+        .addEventListener(`change`, this._emojiClickHandler);
   }
 
   _getTemplate() {
     return createFilmCommentsTemplate(this._film);
+  }
+
+  _emojiClickHandler(evt) {
+    const userEmoji = this.getElement()
+                          .querySelector(`.film-details__add-emoji-label`);
+    const emoji = evt.target.value;
+
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
+    evt.preventDefault();
+
+    userEmoji.innerHTML = `<img src="./images/emoji/${emoji}.png" width="60" height="60" alt="emoji-${emoji}">`;
   }
 }
