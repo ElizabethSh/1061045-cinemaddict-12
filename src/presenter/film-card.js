@@ -6,14 +6,14 @@ import {Mode} from "../const.js";
 const body = document.querySelector(`body`);
 
 export default class FilmCard {
-  constructor(container, changeData/*, changeMode*/) {
+  constructor(container, changeData, changeMode) {
     this._filmCardContainer = container;
 
     this._changeData = changeData;
-    // this._changeMode = changeMode;
+    this._changeMode = changeMode;
 
     this._filmCardComponent = null;
-    this._popup = null;
+    this._popupPresenter = null;
     this._mode = Mode.DEFAULT;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -23,15 +23,35 @@ export default class FilmCard {
 
   init(film) {
     this._film = film;
-    this._popup = new PopupPresenter(body);
 
     const prevFilmCardComponent = this._filmCardComponent;
 
     this._filmCardComponent = new FilmCardView(film);
 
+    // обработчик открытия попапа на постер
+    this._filmCardComponent.setPosterClickHandler(() => {
+      this._renderPopup(film);
+    });
+
+    // обработчик открытия попапа на title
+    this._filmCardComponent.setTitleClickHandler(() => {
+      this._renderPopup(film);
+    });
+
+    // обработчик открытия попапа на кол-во комментариев в карточке
+    this._filmCardComponent.setCommentAmountClickHandler(() => {
+      this._renderPopup(film);
+    });
+
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
+    // если открыт попап, обнови его
+    // if (this._mode === Mode.POPUP) {
+    if (this._popupPresenter !== null) {
+      this._popupPresenter.init(film);
+    }
 
     // если карточка фильма рисуется первый раз, просто отрисуй
     if (prevFilmCardComponent === null) {
@@ -48,39 +68,30 @@ export default class FilmCard {
     remove(prevFilmCardComponent);
   }
 
+  // метод для удаления всех попапов и переключения режима страницы
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._popup.remove();
+      this._popupPresenter.destroy();
+      this._mode = Mode.DEFAULT;
     }
   }
 
+  // метод для удаления карточки
   destroy() {
     remove(this._filmCardComponent);
   }
 
-  _render(film) {
-    // обработчик открытия попапа на постер
-    this._filmCardComponent.setPosterClickHandler(() => {
-      this._renderPopup(film);
-    });
-
-    // обработчик открытия попапа на title
-    this._filmCardComponent.setTitleClickHandler(() => {
-      this._renderPopup(film);
-    });
-
-    // обработчик открытия попапа на кол-во комментариев в карточке
-    this._filmCardComponent.setCommentAmountClickHandler(() => {
-      this._renderPopup(film);
-    });
-
+  // метод для рендера карточки фильма
+  _render() {
     render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
   }
 
+  // метод для рендера попапа
   _renderPopup(film) {
-    this._popup.init(film);
-    // this._changeMode();
-    // this._mode = Mode.POPUP;
+    this._popupPresenter = new PopupPresenter(body, this._handleWatchlistClick, this._handleAlreadyWatchedClick, this._handleFavoriteClick);
+    this._changeMode();
+    this._popupPresenter.init(film);
+    this._mode = Mode.POPUP;
   }
 
   _handleWatchlistClick() {
