@@ -1,4 +1,4 @@
-import SmartView from "./smart.js";
+import Abstract from "./abstract.js";
 
 const createFilmCardTemplate = (film) => {
   const {title, description, poster, rating, releaseDate, isWatchlist, isHistory, isFavorites} = film;
@@ -38,12 +38,12 @@ const createFilmCardTemplate = (film) => {
   );
 };
 
-export default class FilmCard extends SmartView {
+export default class FilmCard extends Abstract {
   constructor(film) {
     super();
 
-    // this._data = {}; - пришло из SmartView
     this._data = film;
+
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
     this._commentAmountClickHandler = this._commentAmountClickHandler.bind(this);
@@ -51,12 +51,6 @@ export default class FilmCard extends SmartView {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._alreadyWatchedClickHandler = this._alreadyWatchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-  }
-
-  restoreHandlers() {
-    this.setPosterClickHandler(this._callback.posterClick);
-    this.setTitleClickHandler(this._callback.titleClick);
-    this.setCommentAmountClickHandler(this._callback.commentAmountClick);
   }
 
   _getTemplate() {
