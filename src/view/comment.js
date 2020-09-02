@@ -1,3 +1,4 @@
+import he from "he";
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
 
@@ -9,7 +10,7 @@ const createCommentItemTemplate = (comment) => {
          <img src="./images/emoji/${emoji}" width="55" height="55" alt="emoji-smile">
        </span>
        <div>
-         <p class="film-details__comment-text">${commentMessage}</p>
+         <p class="film-details__comment-text">${he.encode(commentMessage)}</p>
          <p class="film-details__comment-info">
            <span class="film-details__comment-author">${author}</span>
            <span class="film-details__comment-day">${date}</span>
