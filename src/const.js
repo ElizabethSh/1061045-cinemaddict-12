@@ -5,3 +5,8 @@ export const SortType = {
   DATE: `date`,
   RATING: `rating`
 };
+
+export const Mode = {
+  DEFAULT: `DEFAULT`,
+  POPUP: `POPUP`
+};
