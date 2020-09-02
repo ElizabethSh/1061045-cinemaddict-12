@@ -18,8 +18,9 @@ const TOP_RATED_TITLE = `Top Rated`;
 const MOST_COMMENT_TITLE = `Most commented`;
 
 export default class MovieList {
-  constructor(container) {
+  constructor(container, filmsModel) {
     this._filmContainer = container;
+    this._filmsModel = filmsModel;
     this._renderedFilmAmount = MAX_FILMS_PER_STEP;
     this._topRatedListComponent = null;
     this._mostCommentedListComponent = null;
@@ -40,16 +41,27 @@ export default class MovieList {
   }
 
   // Метод для инициализации (начала работы) модуля
-  init(films) {
-    this._films = films.slice();
-    this._sourcedFilms = films.slice(); // бэкап исходного массива
-    this._filters = generateFilters(this._films);
+  init() {
+    // this._films = films.slice();
+    // this._sourcedFilms = films.slice(); // бэкап исходного массива
+    this._filters = generateFilters(this._filmsModel.getFilms());
 
     this._mainNavigationComponent = new MainNavigationView(this._filters);
     this._topRatedListComponent = new ExtraListPresenter(this._contentComponent, TOP_RATED_TITLE);
     this._mostCommentedListComponent = new ExtraListPresenter(this._contentComponent, MOST_COMMENT_TITLE);
 
     this._renderMovieList();
+  }
+
+  _getFilms() {
+    switch (this._curentSortType) {
+      case SortType.DATE:
+        return this._filmsModel.getFilms().slice().sort(sortByDate);
+
+      case SortType.RATING:
+        return this._filmsModel.getFilms().slice().sort(sortByRating);
+    }
+    return this._filmsModel.getFilms();
   }
 
   // метод для перерендеринга карточки обновленного фильма
