@@ -21,8 +21,9 @@ export default class Popup {
   }
 
   // Метод для инициализации (начала работы) модуля
-  init(film) {
+  init(film, comments) {
     this._film = film;
+    this._comments = comments;
 
     const prevPopupComponent = this._popupComponent;
     this._popupComponent = new PopupView();
@@ -83,7 +84,7 @@ export default class Popup {
 
   // метод для рендеринга комментариев
   _renderFilmComment() {
-    const filmCommentComponent = new CommentView(this._film);
+    const filmCommentComponent = new CommentView(this._film, this._comments);
     render(this._filmInfoContainer, filmCommentComponent, RenderPosition.AFTEREND);
   }
 
