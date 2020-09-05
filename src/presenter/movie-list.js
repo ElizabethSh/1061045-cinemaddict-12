@@ -101,20 +101,19 @@ export default class MovieList {
   }
 
   // В зависимости от типа изменений решаем, что делать:
-  // - обновить часть списка (например, когда поменялось описание)
-  // - обновить список (например, когда задача ушла в архив)
-  // - обновить всю доску (например, при переключении фильтра)
-  _handleModeLEvent(updateType, data) {
+  // - обновить список (например, когда у фильма поменялся признак)
+  // - обновить весь верхний раздел (например, при переключении фильтра)
+  _handleModeLEvent(updateType) {
     switch (updateType) {
       case UpdateType.MINOR:
-        this._clearMovieList();
-        this._renderAllFilmList();
         // - обновить список
+        this._clearMovieList();
+        this._renderAllFilmsList();
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску
         this._clearMovieList({resetRenderedFilmCount: true, resetSortType: true});
-        this._renderAllFilmList();
+        this._renderAllFilmsList();
         break;
     }
   }
@@ -128,7 +127,7 @@ export default class MovieList {
     // рендер <section class="films" (секция после сортировки)
     // со всеми разделами фильмов
     render(this._filmContainer, this._contentComponent, RenderPosition.BEFOREEND);
-    this._renderFilmtListContent();
+    this._renderAllFilmsList();
     this._renderTopRatedList();
     this._renderMostCommentedList();
   }
@@ -141,41 +140,65 @@ export default class MovieList {
     render(this._filmContainer, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
-  // метод для рендеринга section class="films-list"
-  _renderFilmtListContent() {
-    const filmCount = this._getFilms().length;
+  // метод для рендера верхнего раздела с фильмами
+  _renderAllFilmsList() {
+    const films = this._getFilms();
+    const filmCount = films.length;
+
     if (filmCount === 0) {
       // если фильмов нет, рендерим заглушку
       this._renderNoFilms();
       return;
     }
-    // иначе отобрази контент с фильмами
-    render(this._contentComponent, this._allFilmSectionComponent, RenderPosition.BEFOREEND);
-    this._renderAllFilmContainer();
-  }
+    // иначе отобрази контент с фильмами <section class="films-list">
+    render(this._contentComponent, this._allFilmSectionComponent, RenderPosition.AFTERBEGIN);
 
-  // метод для рендеринга заглушки, вставит один раздел вместо трех
-  _renderNoFilms() {
-    render(this._contentComponent, this._noFilmComponent, RenderPosition.AFTERBEGIN);
-  }
-
-  // метод ля рендеринга раздела div class="films-list__container"
-  _renderAllFilmContainer() {
+    // рендер раздела div class="films-list__container"
     render(this._allFilmSectionComponent, this._allFilmListComponent, RenderPosition.BEFOREEND);
-    this._renderAllFilmList();
-  }
 
-  // метод для рендеринга раздела со всеми фильмами
-  _renderAllFilmList() {
-    const films = this._getFilms();
-    const filmCount = films.length;
-
+    // рендер карточек фильмов
     this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmAmount)));
 
     if (filmCount > MAX_FILMS_PER_STEP) {
       this._renderShowMoreButton();
     }
   }
+
+  // // метод для рендеринга section class="films-list"
+  // _renderFilmtListContent() {
+  //   const filmCount = this._getFilms().length;
+  //   if (filmCount === 0) {
+  //     // если фильмов нет, рендерим заглушку
+  //     this._renderNoFilms();
+  //     return;
+  //   }
+  //   // иначе отобрази контент с фильмами
+  //   render(this._contentComponent, this._allFilmSectionComponent, RenderPosition.BEFOREEND);
+  //   this._renderAllFilmContainer();
+  // }
+
+  // метод для рендеринга заглушки, вставит один раздел вместо трех
+  _renderNoFilms() {
+    render(this._contentComponent, this._noFilmComponent, RenderPosition.AFTERBEGIN);
+  }
+
+  // // метод ля рендеринга раздела div class="films-list__container"
+  // _renderAllFilmContainer() {
+  //   render(this._allFilmSectionComponent, this._allFilmListComponent, RenderPosition.BEFOREEND);
+  //   this._renderAllFilmList();
+  // }
+
+  // // метод для рендеринга раздела со всеми фильмами
+  // _renderAllFilmList() {
+  //   const films = this._getFilms();
+  //   const filmCount = films.length;
+
+  //   this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmAmount)));
+
+  //   if (filmCount > MAX_FILMS_PER_STEP) {
+  //     this._renderShowMoreButton();
+  //   }
+  // }
 
   // метод для рендеринга N-карточек за раз
   _renderFilmCards(films) {
@@ -244,8 +267,7 @@ export default class MovieList {
     this._clearMovieList({resetRenderedFilmCount: true});
 
     // - Рендерим список заново
-    this._renderAllFilmList();
-
+    this._renderAllFilmsList();
   }
 
   _clearMovieList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
@@ -274,7 +296,7 @@ export default class MovieList {
     }
 
     if (resetSortType) {
-      this._currentSortType = SortType.DEFAULT;
+      this._curentSortType = SortType.DEFAULT;
     }
   }
 
