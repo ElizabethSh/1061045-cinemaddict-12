@@ -12,8 +12,9 @@ export default class ExtraList {
     this._extraListContainer = this._extraListComponent.getElement().querySelector(`.films-list__container`);
   }
 
-  init(films) {
+  init(films, comments) {
     this._films = films.slice();
+    this._comments = comments;
     this._renderExtraList();
   }
 
@@ -28,8 +29,13 @@ export default class ExtraList {
       .forEach((film) => this._renderFilmCard(film));
   }
 
+  _getFilmComments(film) {
+    return this._comments.slice().filter((comment) => comment.filmID === film.id);
+  }
+
   _renderFilmCard(film) {
+    const filmComments = this._getFilmComments(film);
     const filmCardPresenter = new FilmCardPresenter(this._extraListContainer);
-    filmCardPresenter.init(film);
+    filmCardPresenter.init(film, filmComments);
   }
 }
