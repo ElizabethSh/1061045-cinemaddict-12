@@ -84,7 +84,7 @@ export default class Popup {
 
   // метод для рендеринга комментариев
   _renderFilmComment() {
-    const filmCommentComponent = new CommentView(this._film, this._comments);
+    const filmCommentComponent = new CommentView(this._comments);
     render(this._filmInfoContainer, filmCommentComponent, RenderPosition.AFTEREND);
   }
 
