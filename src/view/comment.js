@@ -32,13 +32,13 @@ const createEmojisTemplate = () => {
   return EMOJIS.map((emoji) => createEmojiItemTemplate(emoji)).join(``);
 };
 
-const createFilmCommentsTemplate = (film) => {
+const createFilmCommentsTemplate = (comments) => {
 
   const createCommentsTemplate = () => {
-    return film.comments.map((comment) => createCommentItemTemplate(comment)).join(``);
+    return comments.map((comment) => createCommentItemTemplate(comment)).join(``);
   };
 
-  const commentAmount = film.comments.length;
+  const commentAmount = comments.length;
   const commentTemplate = createCommentsTemplate();
   const emojisTemplate = createEmojisTemplate();
 
@@ -68,9 +68,9 @@ const createFilmCommentsTemplate = (film) => {
 };
 
 export default class Comment extends AbstractView {
-  constructor(film) {
+  constructor(filmComments) {
     super();
-    this._film = film;
+    this._filmComments = filmComments;
 
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
 
@@ -80,7 +80,7 @@ export default class Comment extends AbstractView {
   }
 
   _getTemplate() {
-    return createFilmCommentsTemplate(this._film);
+    return createFilmCommentsTemplate(this._filmComments);
   }
 
   _emojiClickHandler(evt) {
