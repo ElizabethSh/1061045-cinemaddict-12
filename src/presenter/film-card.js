@@ -1,7 +1,7 @@
 import FilmCardView from "../view/film-card.js";
 import PopupPresenter from "../presenter/popup.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {Mode} from "../const.js";
+import {Mode, UserAction, UpdateType} from "../const.js";
 
 const body = document.querySelector(`body`);
 
@@ -21,26 +21,27 @@ export default class FilmCard {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(film) {
+  init(film, filmComments) {
     this._film = film;
+    this._filmComments = filmComments;
 
     const prevFilmCardComponent = this._filmCardComponent;
 
-    this._filmCardComponent = new FilmCardView(film);
+    this._filmCardComponent = new FilmCardView(film, filmComments);
 
     // обработчик открытия попапа на постер
     this._filmCardComponent.setPosterClickHandler(() => {
-      this._renderPopup(film);
+      this._renderPopup();
     });
 
     // обработчик открытия попапа на title
     this._filmCardComponent.setTitleClickHandler(() => {
-      this._renderPopup(film);
+      this._renderPopup();
     });
 
     // обработчик открытия попапа на кол-во комментариев в карточке
     this._filmCardComponent.setCommentAmountClickHandler(() => {
-      this._renderPopup(film);
+      this._renderPopup();
     });
 
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -87,15 +88,17 @@ export default class FilmCard {
   }
 
   // метод для рендера попапа
-  _renderPopup(film) {
+  _renderPopup() {
     this._popupPresenter = new PopupPresenter(body, this._handleWatchlistClick, this._handleAlreadyWatchedClick, this._handleFavoriteClick);
-    this._changeMode();
-    this._popupPresenter.init(film);
+    // this._changeMode();
+    this._popupPresenter.init(this._film, this._filmComments);
     this._mode = Mode.POPUP;
   }
 
   _handleWatchlistClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -108,6 +111,8 @@ export default class FilmCard {
 
   _handleAlreadyWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -120,6 +125,8 @@ export default class FilmCard {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
