@@ -56,7 +56,7 @@ export default class FilmCard {
 
     // если карточка фильма рисуется первый раз, просто отрисуй
     if (prevFilmCardComponent === null) {
-      this._render(film);
+      this._renderCard(film);
       return;
     }
 
@@ -83,7 +83,7 @@ export default class FilmCard {
   }
 
   // метод для рендера карточки фильма
-  _render() {
+  _renderCard() {
     render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
   }
 
