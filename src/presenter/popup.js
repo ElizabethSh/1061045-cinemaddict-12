@@ -1,7 +1,8 @@
 import PopupView from "../view/popup.js";
 import FilmInfoView from "../view/film-info.js";
 import FilmInfoControlView from "../view/film-control.js";
-import CommentView from "../view/comment.js";
+import FilmCommentsView from "../view/film-comments.js";
+import CommentPresenter from "../presenter/comment.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 
 export default class Popup {
@@ -31,7 +32,7 @@ export default class Popup {
     this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
 
     if (prevPopupComponent === null) {
-      this._render(film);
+      this._render();
       return;
     }
 
@@ -63,7 +64,7 @@ export default class Popup {
   _renderFilmDetails() {
     this._renderFilmInfo();
     this._renderFilmControl();
-    this._renderFilmComment();
+    this._renderFilmComments();
   }
 
   // метод для рендеринга информации о фильме
@@ -83,9 +84,21 @@ export default class Popup {
   }
 
   // метод для рендеринга комментариев
-  _renderFilmComment() {
-    const filmCommentComponent = new CommentView(this._comments);
-    render(this._filmInfoContainer, filmCommentComponent, RenderPosition.AFTEREND);
+  _renderFilmComments() {
+    this._filmCommentsComponent = new FilmCommentsView(this._comments);
+    this._commentsContainer = this._filmCommentsComponent.getElement().querySelector(`.film-details__comments-list`);
+
+    // рендер секции комментариев к фильму
+    render(this._filmInfoContainer, this._filmCommentsComponent, RenderPosition.AFTEREND);
+
+    // рендер каждого комментария
+    this._comments.forEach((comment) => this._renderComment(comment));
+  }
+
+  // метод для рендера одного комментария
+  _renderComment(comment) {
+    const commentPresenter = new CommentPresenter(this._commentsContainer);
+    commentPresenter.init(comment);
   }
 
   _escKeyDownHandler(evt) {
