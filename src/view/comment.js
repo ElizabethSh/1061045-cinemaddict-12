@@ -34,7 +34,7 @@ export default class Comment extends Abstract {
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick();
+    this._callback.deleteClick(this._comment);
   }
 
   setCommentDeleteClickHandler(callback) {
