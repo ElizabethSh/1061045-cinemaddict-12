@@ -1,4 +1,4 @@
-import {getRandomInteger, generateArrayElement} from "../utils/common.js";
+import {getRandomInteger, generateArrayElement, generateId} from "../utils/common.js";
 import {EMOJIS} from "../const.js";
 
 const MAX_DAY_GAP = 7;
@@ -39,6 +39,7 @@ export const generateComment = (id) => {
   const commentMessage = generateArrayElement(MESSAGES);
   const author = generateArrayElement(AUTHOR_NAMES);
   return {
+    id: generateId(),
     emoji: `${emoji}.png`,
     commentMessage,
     author,
