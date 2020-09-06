@@ -22,6 +22,8 @@ export const humanizeReleaseData = (date) => {
   return date.toLocaleString(`en-GB`, {day: `numeric`, month: `long`, year: `numeric`});
 };
 
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 // // метод обновления массива через замену изменившегося элемента
 // export const updateItem = (items, update) => {
 //   // ищем обновленный item в переданном массиве items
