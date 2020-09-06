@@ -4,9 +4,10 @@ import FilmInfoControlView from "../view/film-control.js";
 import FilmCommentsView from "../view/film-comments.js";
 import CommentPresenter from "../presenter/comment.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {UpdateType, UserAction} from "../const.js";
 
 export default class Popup {
-  constructor(container, watchlistChange, alreadyWatchedChange, favoriteChange) {
+  constructor(container, watchlistChange, alreadyWatchedChange, favoriteChange, commentsModel) {
     this._popupContainer = container;
 
     // в попапе изменение контролов должно вызывать перерендер карточек,
@@ -15,10 +16,15 @@ export default class Popup {
     this._watchlistChange = watchlistChange;
     this._alreadyWatchedChange = alreadyWatchedChange;
     this._favoriteChange = favoriteChange;
+    this._commentsModel = commentsModel;
     this._popupComponent = null;
 
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleCommentModelEvent = this._handleCommentModelEvent.bind(this);
+    this._handleCommentViewAction = this._handleCommentViewAction.bind(this);
+
+    this._commentsModel.addObserver(this._handleCommentModelEvent);
   }
 
   // Метод для инициализации (начала работы) модуля
@@ -85,7 +91,7 @@ export default class Popup {
 
   // метод для рендеринга комментариев
   _renderFilmComments() {
-    this._filmCommentsComponent = new FilmCommentsView(this._comments);
+    this._filmCommentsComponent = new FilmCommentsView(this._comments, this._handleCommentViewAction);
     this._commentsContainer = this._filmCommentsComponent.getElement().querySelector(`.film-details__comments-list`);
 
     // рендер секции комментариев к фильму
@@ -97,8 +103,12 @@ export default class Popup {
 
   // метод для рендера одного комментария
   _renderComment(comment) {
-    const commentPresenter = new CommentPresenter(this._commentsContainer);
+    const commentPresenter = new CommentPresenter(this._commentsContainer, this._handleCommentViewAction);
     commentPresenter.init(comment);
+  }
+
+  _clearCommentsList() {
+    remove(this._filmCommentsComponent);
   }
 
   _escKeyDownHandler(evt) {
@@ -112,5 +122,27 @@ export default class Popup {
   // и вызовется при клике на кнопку закрытия попапа
   _handleCloseButtonClick() {
     this.destroy();
+  }
+
+  _handleCommentViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.ADD_COMMENT:
+        this._commentsModel.addComment(updateType, update);
+        break;
+
+      case UserAction.DELETE_COMMENT:
+        this._commentsModel.deleteComment(updateType, update);
+        break;
+    }
+  }
+
+  _handleCommentModelEvent(updateType) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // обновляет список комментариев
+        this._clearCommentsList();
+        this._renderFilmComments();
+        break;
+    }
   }
 }
