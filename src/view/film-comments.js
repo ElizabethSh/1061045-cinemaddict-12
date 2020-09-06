@@ -1,25 +1,5 @@
-// import he from "he";
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
-
-// const createCommentItemTemplate = (comment) => {
-//   const {emoji, date, commentMessage, author} = comment;
-//   return `
-//     <li class="film-details__comment">
-//        <span class="film-details__comment-emoji">
-//          <img src="./images/emoji/${emoji}" width="55" height="55" alt="emoji-smile">
-//        </span>
-//        <div>
-//          <p class="film-details__comment-text">${he.encode(commentMessage)}</p>
-//          <p class="film-details__comment-info">
-//            <span class="film-details__comment-author">${author}</span>
-//            <span class="film-details__comment-day">${date}</span>
-//            <button class="film-details__comment-delete">Delete</button>
-//          </p>
-//        </div>
-//      </li>
-//   `;
-// };
 
 const createEmojiItemTemplate = (emoji) => {
   return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
@@ -34,12 +14,7 @@ const createEmojisTemplate = () => {
 
 const createFilmCommentsTemplate = (comments) => {
 
-  // const createCommentsTemplate = () => {
-  //   return comments.map((comment) => createCommentItemTemplate(comment)).join(``);
-  // };
-
   const commentAmount = comments.length;
-  // const commentTemplate = createCommentsTemplate();
   const emojisTemplate = createEmojisTemplate();
 
   return (
