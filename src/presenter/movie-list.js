@@ -104,7 +104,7 @@ export default class MovieList {
   // В зависимости от типа изменений решаем, что делать:
   // - обновить список (например, когда у фильма поменялся признак)
   // - обновить весь верхний раздел (например, при переключении фильтра)
-  _handleModeLEvent(updateType, data) {
+  _handleModeLEvent(updateType) {
     switch (updateType) {
 
       // case UpdateType.PATCH:
@@ -221,7 +221,7 @@ export default class MovieList {
   _handleShowMoreButtonClick() {
     const filmCount = this._getFilms().length;
     const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmAmount + MAX_FILMS_PER_STEP);
-    const films = this._getFilms().slice(this._renderedFilmAmount, newRenderedFilmCount)
+    const films = this._getFilms().slice(this._renderedFilmAmount, newRenderedFilmCount);
 
     this._renderFilmCards(films);
     this._renderedFilmAmount = newRenderedFilmCount;
