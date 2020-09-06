@@ -19,6 +19,7 @@ export const UserAction = {
 
 
 export const UpdateType = {
+  PATCH: `PATCH`, // обновляет список комментариев
   MINOR: `MINOR`,
   MAJOR: `MAJOR`
 };
