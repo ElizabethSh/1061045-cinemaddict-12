@@ -1,9 +1,11 @@
 import CommentView from "../view/comment.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const.js";
 
 export default class Comment {
-  constructor(commentContainer) {
+  constructor(commentContainer, changeData) {
     this._commentContainer = commentContainer;
+    this._changeData = changeData;
     this._commentComponent = null;
 
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
@@ -26,11 +28,15 @@ export default class Comment {
     remove(prevCommentComponent);
   }
 
-  _handleDeleteClick() {
-    this._destroy();
+  _handleDeleteClick(comment) {
+    this._changeData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        comment
+    );
   }
 
-  _destroy() {
-    remove(this._commentComponent);
-  }
+  // _destroy() {
+  //   remove(this._commentComponent);
+  // }
 }
