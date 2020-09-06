@@ -6,11 +6,12 @@ import {Mode, UserAction, UpdateType} from "../const.js";
 const body = document.querySelector(`body`);
 
 export default class FilmCard {
-  constructor(container, changeData, changeMode) {
+  constructor(container, changeData, changeMode, commentsModel) {
     this._filmCardContainer = container;
 
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._commentsModel = commentsModel;
 
     this._filmCardComponent = null;
     this._popupPresenter = null;
@@ -73,7 +74,6 @@ export default class FilmCard {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._popupPresenter.destroy();
-      this._mode = Mode.DEFAULT;
     }
   }
 
@@ -89,8 +89,9 @@ export default class FilmCard {
 
   // метод для рендера попапа
   _renderPopup() {
-    this._popupPresenter = new PopupPresenter(body, this._handleWatchlistClick, this._handleAlreadyWatchedClick, this._handleFavoriteClick);
-    // this._changeMode();
+    this._popupPresenter = new PopupPresenter(body, this._handleWatchlistClick, this._handleAlreadyWatchedClick, this._handleFavoriteClick, this._commentsModel);
+
+    this._changeMode();
     this._popupPresenter.init(this._film, this._filmComments);
     this._mode = Mode.POPUP;
   }
