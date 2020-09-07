@@ -1,9 +1,9 @@
 import AbstractView from "./abstract.js";
-import {humanizeReleaseData} from "../utils/common.js";
+import {formatReleaseData} from "../utils/common.js";
 
 const createFilmInfoTemplate = (film) => {
   const {title, description, poster, rating, releaseDate} = film;
-  const releaseFilmDate = humanizeReleaseData(releaseDate);
+  const releaseFilmDate = formatReleaseData(releaseDate);
   return (
     `<div class="film-details__info-wrap">
       <div class="film-details__poster">
