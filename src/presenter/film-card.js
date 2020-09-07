@@ -22,13 +22,13 @@ export default class FilmCard {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(film, filmComments) {
+  init(film) {
     this._film = film;
-    this._filmComments = filmComments;
+    this._filmComments = this._commentsModel.getCommentsByFilmId(this._film.id);
 
     const prevFilmCardComponent = this._filmCardComponent;
 
-    this._filmCardComponent = new FilmCardView(film, filmComments);
+    this._filmCardComponent = new FilmCardView(film, this._filmComments);
 
     // обработчик открытия попапа на постер
     this._filmCardComponent.setPosterClickHandler(() => {
@@ -92,7 +92,7 @@ export default class FilmCard {
     this._popupPresenter = new PopupPresenter(body, this._handleWatchlistClick, this._handleAlreadyWatchedClick, this._handleFavoriteClick, this._commentsModel);
 
     this._changeMode();
-    this._popupPresenter.init(this._film, this._filmComments);
+    this._popupPresenter.init(this._film);
     this._mode = Mode.POPUP;
   }
 
