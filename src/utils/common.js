@@ -1,3 +1,5 @@
+import moment from "moment";
+
 // функция превращает первую букву строки в заглавную
 export const capitalizeFirstLetter = (string) => {
   if (!string) {
@@ -18,8 +20,12 @@ export const generateArrayElement = (array) => {
   return array[getRandomInteger(0, array.length - 1)];
 };
 
-export const humanizeReleaseData = (date) => {
-  return date.toLocaleString(`en-GB`, {day: `numeric`, month: `long`, year: `numeric`});
+export const formatReleaseData = (date) => {
+  if (!(date instanceof Date)) {
+    return ``;
+  }
+
+  return moment(date).format(`DD MMMM YYYY`);
 };
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
