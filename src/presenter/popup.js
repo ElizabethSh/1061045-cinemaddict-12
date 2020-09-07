@@ -28,14 +28,16 @@ export default class Popup {
   }
 
   // Метод для инициализации (начала работы) модуля
-  init(film, comments) {
+  init(film) {
     this._film = film;
-    this._comments = comments;
+    this._comments = this._commentsModel.getCommentsByFilmId();
 
     const prevPopupComponent = this._popupComponent;
     this._popupComponent = new PopupView();
 
     this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
+
+    this._popupComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
 
     if (prevPopupComponent === null) {
       this._render();
@@ -60,7 +62,6 @@ export default class Popup {
   _render() {
     render(this._popupContainer, this._popupComponent, RenderPosition.BEFOREEND);
 
-    this._popupComponent.setClickHandler(this._handleCloseButtonClick);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
 
     this._renderFilmDetails();
