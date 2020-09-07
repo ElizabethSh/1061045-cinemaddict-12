@@ -1,3 +1,4 @@
+import moment from "moment";
 import {getRandomInteger, generateArrayElement, generateId} from "../utils/common.js";
 import {EMOJIS} from "../const.js";
 
@@ -24,12 +25,7 @@ const generateCommentDate = () => {
 };
 
 const formatDate = (date) => {
-  const dd = date.getDate();
-  const mm = date.getMonth();
-  const year = date.getFullYear();
-  const hour = date.getHours();
-  const minutes = date.getMinutes();
-  return `${year}/${mm}/${dd} ${hour}:${minutes}`;
+  return moment(date).format(`YYYY/MM/DD HH:mm`);
 };
 
 // функция генерации объекта комментария
@@ -40,10 +36,10 @@ export const generateComment = (id) => {
   const author = generateArrayElement(AUTHOR_NAMES);
   return {
     id: generateId(),
+    filmId: id,
     emoji: `${emoji}.png`,
     commentMessage,
     author,
-    date,
-    filmID: id
+    date
   };
 };
