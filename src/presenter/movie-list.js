@@ -48,8 +48,8 @@ export default class MovieList {
 
   init() {
     this._filterPresenter = new FilterPresenter(this._filmContainer, this._filterModel, this._filmsModel);
-    this._topRatedListComponent = new ExtraListPresenter(this._contentComponent, TOP_RATED_TITLE);
-    this._mostCommentedListComponent = new ExtraListPresenter(this._contentComponent, MOST_COMMENT_TITLE);
+    this._topRatedListComponent = new ExtraListPresenter(this._contentComponent, TOP_RATED_TITLE, this._commentsModel);
+    this._mostCommentedListComponent = new ExtraListPresenter(this._contentComponent, MOST_COMMENT_TITLE, this._commentsModel);
 
     this._renderMovieList();
   }
@@ -67,17 +67,6 @@ export default class MovieList {
         return filteredFilms.sort(sortByRating);
     }
     return filteredFilms;
-  }
-
-  _getComments() {
-    return this._commentsModel.getComments();
-  }
-
-  _getFilmComments(film) {
-    const comments = this._getComments().slice();
-
-    const filmComments = comments.filter((comment) => comment.filmID === film.id);
-    return filmComments;
   }
 
   // Здесь будем вызывать обновление модели.
@@ -166,6 +155,7 @@ export default class MovieList {
     // рендер карточек фильмов
     this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmAmount)));
 
+
     if (filmCount > MAX_FILMS_PER_STEP) {
       this._renderShowMoreButton();
     }
@@ -183,9 +173,8 @@ export default class MovieList {
 
   // метод для рендеринга компонентов карточки с фильмом
   _renderFilmCard(film) {
-    const filmComments = this._getFilmComments(film);
     const filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel);
-    filmCardPresenter.init(film, filmComments);
+    filmCardPresenter.init(film);
 
     // сохраняет в observer все фильмы с ключами = id
     this._filmPresenter[film.id] = filmCardPresenter;
@@ -204,12 +193,13 @@ export default class MovieList {
     const topRatedFilms = this._getFilms().slice();
     topRatedFilms.sort(sortByRating);
 
-    this._topRatedListComponent.init(topRatedFilms, this._getComments());
+    this._topRatedListComponent.init(topRatedFilms);
   }
 
   // рендерит Most Commented раздел
   _renderMostCommentedList() {
-    this._mostCommentedListComponent.init(this._getFilms(), this._getComments());
+    const films = this._getFilms();
+    this._mostCommentedListComponent.init(films);
   }
 
   _handleModeChange() {
@@ -238,6 +228,7 @@ export default class MovieList {
       return;
     }
     this._curentSortType = sortType;
+    this._sortComponent.setActiveButton(this._curentSortType);
 
     // - Очищаем список
     this._clearMovieList({resetRenderedFilmCount: true});
@@ -273,6 +264,7 @@ export default class MovieList {
 
     if (resetSortType) {
       this._curentSortType = SortType.DEFAULT;
+      this._sortComponent.setActiveButton(this._curentSortType);
     }
   }
 
