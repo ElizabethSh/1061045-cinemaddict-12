@@ -39,11 +39,12 @@ export default class MovieList {
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
-    this._handleModeLEvent = this._handleModeLEvent.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
 
-    this._filmsModel.addObserver(this._handleModeLEvent);
-    this._filterModel.addObserver(this._handleModeLEvent);
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -73,33 +74,32 @@ export default class MovieList {
   // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
   // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
   // update - обновленные данные
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, update, film) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._filmsModel.updateFilm(updateType, update);
         break;
 
-      //   // возможно не нужно
-      // case UserAction.ADD_COMMENT:
-      //   this._commentsModel.addComment(updateType, update);
-      //   break;
+      case UserAction.ADD_COMMENT:
+        this._commentsModel.addComment(updateType, update);
+        break;
 
-      // case UserAction.DELETE_COMMENT:
-      //   this._commentsModel.deleteComment(updateType, update);
-      //   break;
+      case UserAction.DELETE_COMMENT:
+        this._commentsModel.deleteComment(updateType, update, film);
+        break;
     }
   }
 
   // В зависимости от типа изменений решаем, что делать:
   // - обновить список (например, когда у фильма поменялся признак)
   // - обновить весь верхний раздел (например, при переключении фильтра)
-  _handleModeLEvent(updateType) {
+  _handleModelEvent(updateType, data) {
     switch (updateType) {
 
-      // case UpdateType.PATCH:
-      //   // обновляет карточку
-      //   this._filmPresenter[data.id].init(data);
-      //   break;
+      case UpdateType.PATCH:
+        // обновляет карточку
+        this._filmPresenter[data.id].init(data);
+        break;
 
       case UpdateType.MINOR:
         // - обновить список
@@ -113,7 +113,6 @@ export default class MovieList {
         break;
     }
   }
-  // this._filmPresenter[updatedFilm.id].init(updatedFilm);
 
   // метод для рендеринга содержимого <main>
   _renderMovieList() {
