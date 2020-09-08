@@ -138,9 +138,9 @@ export default class FilmCard {
     const infoControlComponent = new FilmInfoControlView(this._film);
     render(this._filmInfoContainer, infoControlComponent, RenderPosition.BEFOREEND);
 
-    infoControlComponent.setWatchlistChangeHandler(this._watchlistChange);
-    infoControlComponent.setAlreadyWatchedChangeHandler(this._alreadyWatchedChange);
-    infoControlComponent.setFavoriteChangeHandler(this._favoriteChange);
+    infoControlComponent.setWatchlistChangeHandler(this._handleWatchlistClick);
+    infoControlComponent.setAlreadyWatchedChangeHandler(this._handleAlreadyWatchedClick);
+    infoControlComponent.setFavoriteChangeHandler(this._handleFavoriteClick);
   }
 
   // метод для рендеринга комментариев
