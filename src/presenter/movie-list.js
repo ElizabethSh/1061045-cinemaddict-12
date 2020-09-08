@@ -243,7 +243,7 @@ export default class MovieList {
 
     // вызываем у каждого filmPresenter метод destroy
     Object.values(this._filmPresenter)
-          .forEach((presenter) => presenter.destroy());
+          .forEach((presenter) => presenter.destroyFilmCard());
 
     this._filmPresenter = {};
 
