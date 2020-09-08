@@ -23,8 +23,6 @@ const createFilmCommentsTemplate = (comments) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentAmount}</span></h3>
 
         <ul class="film-details__comments-list">
-
-
         </ul>
 
         <div class="film-details__new-comment">
@@ -50,6 +48,7 @@ export default class FilmComments extends AbstractView {
     this._filmComments = filmComments;
 
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
+    this._formSubmitClickHandler = this._formSubmitClickHandler.bind(this);
 
     this.getElement()
         .querySelector(`.film-details__emoji-list`)
@@ -71,6 +70,18 @@ export default class FilmComments extends AbstractView {
     evt.preventDefault();
 
     userEmoji.innerHTML = `<img src="./images/emoji/${emoji}.png" width="60" height="60" alt="emoji-${emoji}">`;
+  }
+
+  _formSubmitClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFormSubmitClickHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement()
+        .querySelector(`.film-details__comment-input`)
+        .addEventListener(`submit`, this._formSubmitClickHandler);
   }
 
 }
