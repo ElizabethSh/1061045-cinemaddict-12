@@ -66,6 +66,10 @@ export default class FilmCard {
     // если карточка фильма рисуется первый раз, просто отрисуй
     if (prevFilmCardComponent === null || prevPopupComponent === null) {
       this._renderCard(film);
+
+      if (this._film.isPopupOpen) {
+        this._renderPopup();
+      }
       return;
     }
 
@@ -87,6 +91,7 @@ export default class FilmCard {
   // метод для удаления карточки
   destroyFilmCard() {
     remove(this._filmCardComponent);
+    this.destroyPopup();
   }
 
   // метод для удаления попапа
@@ -94,6 +99,7 @@ export default class FilmCard {
     remove(this._popupComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
+    this._film.isPopupOpen = false;
   }
 
   // метод для удаления всех попапов и переключения режима страницы
@@ -118,6 +124,7 @@ export default class FilmCard {
     this._renderPopupDetails();
 
     this._mode = Mode.POPUP;
+    this._film.isPopupOpen = true;
   }
 
   _renderPopupDetails() {
