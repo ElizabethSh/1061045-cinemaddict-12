@@ -3,7 +3,7 @@ import PopupView from "../view/popup.js";
 import FilmInfoView from "../view/film-info.js";
 import FilmInfoControlView from "../view/film-control.js";
 import FilmCommentsView from "../view/film-comments.js";
-import CommentPresenter from "../presenter/comment.js";
+import CommentView from "../view/comment.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {Mode, UserAction, UpdateType} from "../const.js";
 
@@ -26,11 +26,9 @@ export default class FilmCard {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
 
-    // this._handleCommentModelEvent = this._handleCommentModelEvent.bind(this);
-    // this._handleCommentViewAction = this._handleCommentViewAction.bind(this);
-
-    // this._commentsModel.addObserver(this._handleCommentModelEvent);
+    this._handleCommentViewAction = this._handleCommentViewAction.bind(this);
   }
 
   init(film) {
@@ -74,14 +72,14 @@ export default class FilmCard {
     }
 
     // иначе, замени предыдущую карточку на обновленную
-    if (this._mode === Mode.DEFAULT) {
-    // if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
+    // if (this._mode === Mode.DEFAULT) {
+    if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
-    if (this._mode === Mode.POPUP) {
-    // if (body.contains(prevPopupComponent.getElement())) {
-      replace(this._popupComponent, prevPopupComponent);
+    // if (this._mode === Mode.POPUP) {
+    if (body.contains(prevPopupComponent.getElement())) {
+      this._renderPopup();
     }
 
     remove(prevPopupComponent);
@@ -152,7 +150,8 @@ export default class FilmCard {
 
   // метод для рендеринга комментариев
   _renderFilmComments() {
-    this._filmCommentsComponent = new FilmCommentsView(this._comments, this._handleCommentViewAction);
+    this._filmCommentsComponent = new FilmCommentsView(this._comments);
+
     this._commentsContainer = this._filmCommentsComponent.getElement().querySelector(`.film-details__comments-list`);
 
     // рендер секции комментариев к фильму
@@ -164,8 +163,9 @@ export default class FilmCard {
 
   // метод для рендера одного комментария
   _renderComment(comment) {
-    const commentPresenter = new CommentPresenter(this._commentsContainer, this._handleCommentViewAction);
-    commentPresenter.init(comment);
+    this._commentComponent = new CommentView(comment);
+    this._commentComponent.setCommentDeleteClickHandler(this._handleDeleteClick);
+    render(this._commentsContainer, this._commentComponent, RenderPosition.BEFOREEND);
   }
 
   _escKeyDownHandler(evt) {
@@ -235,13 +235,12 @@ export default class FilmCard {
     }
   }
 
-  // _handleCommentModelEvent(updateType) {
-  //   switch (updateType) {
-  //     case UpdateType.PATCH:
-  //       // обновляет список комментариев
-  //       this._clearCommentsList();
-  //       this._renderFilmComments();
-  //       break;
-  //   }
-  // }
+  _handleDeleteClick(comment) {
+    this._changeData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        comment,
+        this._film
+    );
+  }
 }
