@@ -16,6 +16,11 @@ const AUTHOR_NAMES = [
   `John Doe`,
 ];
 
+export const generateCurrendDate = () => {
+  const currentDate = new Date();
+  return formatDate(currentDate);
+};
+
 const generateCommentDate = () => {
   const daysGap = getRandomInteger(0, MAX_DAY_GAP);
   const currentDate = new Date();
