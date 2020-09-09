@@ -27,6 +27,7 @@ export default class FilmCard {
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
 
     this._handleCommentViewAction = this._handleCommentViewAction.bind(this);
   }
@@ -150,9 +151,10 @@ export default class FilmCard {
 
   // метод для рендеринга комментариев
   _renderFilmComments() {
-    this._filmCommentsComponent = new FilmCommentsView(this._comments);
+    this._filmCommentsComponent = new FilmCommentsView(this._comments, this._film);
 
     this._commentsContainer = this._filmCommentsComponent.getElement().querySelector(`.film-details__comments-list`);
+    this._filmCommentsComponent.setFormSubmitClickHandler(this._handleFormSubmit);
 
     // рендер секции комментариев к фильму
     render(this._filmInfoContainer, this._filmCommentsComponent, RenderPosition.AFTEREND);
@@ -238,6 +240,16 @@ export default class FilmCard {
   _handleDeleteClick(comment) {
     this._changeData(
         UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        comment,
+        this._film
+    );
+  }
+
+  // колбек который будет вызывать обновление массива коментариев
+  _handleFormSubmit(comment) {
+    this._changeData(
+        UserAction.ADD_COMMENT,
         UpdateType.PATCH,
         comment,
         this._film
