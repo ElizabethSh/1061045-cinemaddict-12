@@ -6,7 +6,7 @@ import {generateCurrendDate} from "../mock/comment.js";
 const BLANK_COMMENT = {
   id: generateId(),
   filmId: null,
-  emoji: null,
+  emoji: `smile.png`,
   commentMessage: ``,
   author: `Anonim`,
   date: generateCurrendDate()
