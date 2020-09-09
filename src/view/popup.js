@@ -41,25 +41,4 @@ export default class Popup extends SmartView {
         .addEventListener(`click`, this._clickCloseButtonHandler);
   }
 
-  // приехало из смарт компонента
-
-  // updateData(update) {
-  //   if (!update) {
-  //     return;
-  //   }
-
-  //   this._data = Object.assign(
-  //       {},
-  //       this._data,
-  //       update
-  //   );
-  //   // console.log(`this._data`, this._data);
-
-  //   // if (justDataUpdating) {
-  //   //   return;
-  //   // }
-
-  //   this.updateElement();
-  // }
-
 }
