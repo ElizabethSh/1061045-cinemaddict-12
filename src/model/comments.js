@@ -18,13 +18,13 @@ export default class Comments extends Observer {
     return this._comments.filter((comment) => comment.filmId === id);
   }
 
-  addComment(updateType, update) {
+  addComment(updateType, update, film) {
     this._comments = [
       ...this._comments,
       update
     ];
 
-    this._notify(updateType, update);
+    this._notify(updateType, film);
   }
 
   deleteComment(updateType, update, film) {
