@@ -1,8 +1,8 @@
 import Abstract from "./abstract.js";
 
-const createFilmCardTemplate = (film) => {
+const createFilmCardTemplate = (film, comments) => {
   const {title, description, poster, rating, releaseDate, isWatchlist, isHistory, isFavorites} = film;
-  const commentAmount = film.comments.length + 1;
+  const commentAmount = comments.length;
   const releaseYear = releaseDate.getFullYear();
 
   const watchlistClassName = isWatchlist
@@ -39,10 +39,11 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCard extends Abstract {
-  constructor(film) {
+  constructor(film, comments) {
     super();
 
     this._data = film;
+    this._comments = comments;
 
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
@@ -54,7 +55,7 @@ export default class FilmCard extends Abstract {
   }
 
   _getTemplate() {
-    return createFilmCardTemplate(this._data);
+    return createFilmCardTemplate(this._data, this._comments);
   }
 
   _posterClickHandler(evt) {

@@ -5,15 +5,17 @@ import FilmCardPresenter from "../presenter/film-card.js";
 const MAX_EXTRA_FILMS_CARD = 2;
 
 export default class ExtraList {
-  constructor(container, header) {
+  constructor(container, header, commentsModel) {
     this._filmContainer = container;
     this._header = header;
+    this._commentsModel = commentsModel;
     this._extraListComponent = new ExtraListView(this._header);
     this._extraListContainer = this._extraListComponent.getElement().querySelector(`.films-list__container`);
   }
 
   init(films) {
     this._films = films.slice();
+    this._comments = this._commentsModel.getComments();
     this._renderExtraList();
   }
 
@@ -29,7 +31,7 @@ export default class ExtraList {
   }
 
   _renderFilmCard(film) {
-    const filmCardPresenter = new FilmCardPresenter(this._extraListContainer);
+    const filmCardPresenter = new FilmCardPresenter(this._extraListContainer, this._handleViewAction, this._handleModeChange, this._commentsModel);
     filmCardPresenter.init(film);
   }
 }

@@ -1,20 +1,19 @@
 import AbstractView from "./abstract.js";
+import {FilterType} from "../const.js";
 
-const MAX_FILMS_AMOUNT = 5;
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
 
-const createFilterItemTemplate = (filter) => {
-  const {name, count} = filter;
-  return `<a href="#${name}" class="main-navigation__item">${name}
-      ${count < MAX_FILMS_AMOUNT ? `<span class="main-navigation__item-count">${count}</span>` : ``}
+  return `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" data-filter-type = "${type}">${name}
+      ${type === FilterType.ALL ? `` : `<span class="main-navigation__item-count">${count}</span>`}
     </a>`;
 };
 
-const createMainNavigationTemplate = (filters) => {
-  const filterTemplate = filters.map((filter) => createFilterItemTemplate(filter)).join(``);
+const createMainNavigationTemplate = (filters, currentFilterType) => {
+  const filterTemplate = filters.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join(``);
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
         ${filterTemplate}
       </div>
       <a href="#stats" class="main-navigation__additional">Stats</a>
@@ -23,12 +22,32 @@ const createMainNavigationTemplate = (filters) => {
 };
 
 export default class MainNavigation extends AbstractView {
-  constructor(filters) {
+  constructor(filters, currentFilterType) {
     super();
     this._filters = filters;
+    this._currentFilter = currentFilterType;
+
+    this._filterTypeClickHandler = this._filterTypeClickHandler.bind(this);
   }
 
   _getTemplate() {
-    return createMainNavigationTemplate(this._filters);
+    return createMainNavigationTemplate(this._filters, this._currentFilter);
+  }
+
+  _filterTypeClickHandler(evt) {
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+
+    evt.preventDefault();
+    this._callback.filterTypeClick(evt.target.dataset.filterType);
+  }
+
+  setFilterTypeClickHandler(callback) {
+    this._callback.filterTypeClick = callback;
+    this.getElement()
+        .querySelector(`.main-navigation__items`)
+        .addEventListener(`click`, this._filterTypeClickHandler);
+
   }
 }
