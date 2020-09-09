@@ -81,7 +81,7 @@ export default class MovieList {
         break;
 
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update);
+        this._commentsModel.addComment(updateType, update, film);
         break;
 
       case UserAction.DELETE_COMMENT:
