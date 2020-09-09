@@ -1,5 +1,16 @@
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
+import {generateId} from "../utils/common.js";
+import {generateCurrendDate} from "../mock/comment.js";
+
+const BLANK_COMMENT = {
+  id: generateId(),
+  filmId: null,
+  emoji: null,
+  commentMessage: ``,
+  author: `Anonim`,
+  date: generateCurrendDate()
+};
 
 const createEmojiItemTemplate = (emoji) => {
   return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
@@ -43,16 +54,25 @@ const createFilmCommentsTemplate = (comments) => {
 };
 
 export default class FilmComments extends AbstractView {
-  constructor(filmComments) {
+  constructor(filmComments, film) {
     super();
     this._filmComments = filmComments;
+    this._film = film;
+
+    this._newComment = BLANK_COMMENT;
+    this._data = this._newComment;
 
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
+    this._commentMessageInputHandler = this._commentMessageInputHandler.bind(this);
     this._formSubmitClickHandler = this._formSubmitClickHandler.bind(this);
 
     this.getElement()
         .querySelector(`.film-details__emoji-list`)
         .addEventListener(`change`, this._emojiClickHandler);
+
+    this.getElement()
+        .querySelector(`.film-details__comment-input`)
+        .addEventListener(`input`, this._commentMessageInputHandler);
   }
 
   _getTemplate() {
@@ -70,18 +90,54 @@ export default class FilmComments extends AbstractView {
     evt.preventDefault();
 
     userEmoji.innerHTML = `<img src="./images/emoji/${emoji}.png" width="60" height="60" alt="emoji-${emoji}">`;
+    this.updateData({
+      emoji: `${emoji}.png`
+    });
   }
 
   _formSubmitClickHandler(evt) {
+    if (evt.ctrlKey && evt.keyCode === 13) {
+      evt.preventDefault();
+      this._callback.formSubmit(FilmComments.parseCommentToData(this._data, this._film));
+    }
+  }
+
+  _commentMessageInputHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this.updateData({
+      commentMessage: evt.target.value
+    });
   }
 
   setFormSubmitClickHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement()
         .querySelector(`.film-details__comment-input`)
-        .addEventListener(`submit`, this._formSubmitClickHandler);
+        .addEventListener(`keydown`, this._formSubmitClickHandler);
+  }
+
+
+  // метод для обновления данных
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+        {},
+        this._data,
+        update
+    );
+  }
+
+  static parseCommentToData(newComment, film) {
+    return Object.assign(
+        {},
+        newComment,
+        {
+          filmId: film.id
+        }
+    );
   }
 
 }
