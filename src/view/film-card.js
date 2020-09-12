@@ -1,9 +1,24 @@
 import Abstract from "./abstract.js";
+import {formatFilmDuration, formatDescription, capitalizeFirstLetter} from "../utils/common.js";
 
-const createFilmCardTemplate = (film, comments) => {
-  const {title, description, poster, rating, releaseDate, isWatchlist, isHistory, isFavorites} = film;
-  const commentAmount = comments.length;
+const createFilmCardTemplate = (film) => {
+  const {
+    title,
+    description,
+    poster,
+    rating,
+    releaseDate,
+    runtime,
+    isWatchlist,
+    isHistory,
+    isFavorites
+  } = film;
+
+  const commentAmount = film.comments.length;
   const releaseYear = releaseDate.getFullYear();
+  const filmDuration = formatFilmDuration(runtime);
+  const filmRating = rating.toFixed(1);
+  const filmDescription = capitalizeFirstLetter(formatDescription(description));
 
   const watchlistClassName = isWatchlist
     ? `film-card__controls-item--add-to-watchlist film-card__controls-item--active`
@@ -20,14 +35,14 @@ const createFilmCardTemplate = (film, comments) => {
   return (
     `<article class="film-card">
       <h3 class="film-card__title">${title}</h3>
-      <p class="film-card__rating">${rating}</p>
+      <p class="film-card__rating">${filmRating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
-        <span class="film-card__duration">1h 55m</span>
+        <span class="film-card__duration">${filmDuration}</span>
         <span class="film-card__genre">Musical</span>
       </p>
-      <img src="./images/posters/${poster}" alt="" class="film-card__poster">
-      <p class="film-card__description">${description}</p>
+      <img src="./${poster}" alt="" class="film-card__poster">
+      <p class="film-card__description">${filmDescription}</p>
       <a class="film-card__comments">${commentAmount} comments</a>
       <form class="film-card__controls">
         <button class="film-card__controls-item button ${watchlistClassName}">Add to watchlist</button>
