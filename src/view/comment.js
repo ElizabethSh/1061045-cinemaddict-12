@@ -1,18 +1,21 @@
 import he from "he";
 import Abstract from "./abstract.js";
+import {formatDate, capitalizeFirstLetter} from "../utils/common.js";
 
 const createCommentItemTemplate = (comment) => {
   const {emoji, date, commentMessage, author} = comment;
+  const commentDate = formatDate(date);
+  const userComment = capitalizeFirstLetter(commentMessage);
   return (
     `<li class="film-details__comment">
        <span class="film-details__comment-emoji">
-         <img src="./images/emoji/${emoji}" width="55" height="55" alt="emoji-smile">
+         <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-smile">
        </span>
        <div>
-         <p class="film-details__comment-text">${he.encode(commentMessage)}</p>
+         <p class="film-details__comment-text">${he.encode(userComment)}</p>
          <p class="film-details__comment-info">
            <span class="film-details__comment-author">${author}</span>
-           <span class="film-details__comment-day">${date}</span>
+           <span class="film-details__comment-day">${commentDate}</span>
            <button class="film-details__comment-delete">Delete</button>
          </p>
        </div>
