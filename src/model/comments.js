@@ -6,8 +6,9 @@ export default class Comments extends Observer {
     this._comments = [];
   }
 
-  setComments(comments) {
+  setComments(updateType, comments, film) {
     this._comments = comments.slice();
+    this._notify(updateType, film);
   }
 
   getComments() {
@@ -40,5 +41,26 @@ export default class Comments extends Observer {
     ];
 
     this._notify(updateType, film);
+  }
+
+  static adaptToClient(comment) {
+    const adaptedComment = Object.assign(
+        {},
+        comment,
+        {
+          commentMessage: comment.comment,
+          date: new Date(comment.date),
+          emoji: comment.emotion
+        }
+    );
+
+    delete adaptedComment.comment;
+    delete adaptedComment.emotion;
+
+    return adaptedComment;
+  }
+
+  static adaptToServer() {
+
   }
 }
