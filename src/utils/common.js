@@ -8,6 +8,11 @@ export const capitalizeFirstLetter = (string) => {
   return string[0].toUpperCase() + string.slice(1);
 };
 
+export const generateCurrendDate = () => {
+  const currentDate = new Date();
+  return formatDate(currentDate);
+};
+
 export const formatReleaseData = (date) => {
   if (!(date instanceof Date)) {
     return ``;
@@ -21,6 +26,10 @@ export const formatDescription = (descriptionText) => {
   }
 
   return `${descriptionText.slice(0, 139)}...`;
+};
+
+export const formatDate = (date) => {
+  return moment(date).format(`YYYY/MM/DD HH:mm`);
 };
 
 // не забыть удалить!
