@@ -21,7 +21,9 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`, // обновляет список комментариев
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`,
+  INIT_POPUP: `INIT_POPUP`
 };
 
 export const FilterType = {
@@ -30,3 +32,8 @@ export const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`
 };
+
+// export const MenuItem = {
+//   FILTERS: `FILTERS`,
+//   STATISTICS: `STATISTICS`
+// };
