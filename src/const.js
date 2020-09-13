@@ -33,7 +33,7 @@ export const FilterType = {
   FAVORITES: `favorites`
 };
 
-// export const MenuItem = {
-//   FILTERS: `FILTERS`,
-//   STATISTICS: `STATISTICS`
-// };
+export const MenuItem = {
+  FILTERS: `FILTERS`,
+  STATISTICS: `STATISTICS`
+};
