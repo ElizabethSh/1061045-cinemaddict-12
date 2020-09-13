@@ -1,7 +1,6 @@
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
-import {generateId} from "../utils/common.js";
-import {generateCurrendDate} from "../mock/comment.js";
+import {generateId, generateCurrendDate} from "../utils/common.js";
 
 const BLANK_COMMENT = {
   id: generateId(),
