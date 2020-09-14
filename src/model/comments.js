@@ -60,7 +60,21 @@ export default class Comments extends Observer {
     return adaptedComment;
   }
 
-  static adaptToServer() {
+  static adaptToServer(comment) {
+    const adaptedComment = Object.assign(
+        {},
+        comment,
+        {
+          "comment": comment.commentMessage,
+          "date": comment.date instanceof Date ? comment.date.toISOString() : null,
+          "emotion": comment.emoji
+        }
+    );
 
+    delete adaptedComment.commentMessage;
+    delete adaptedComment.emoji;
+    delete adaptedComment.filmId;
+
+    return adaptedComment;
   }
 }
