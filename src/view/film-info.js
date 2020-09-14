@@ -1,41 +1,71 @@
 import AbstractView from "./abstract.js";
-import {formatReleaseData} from "../utils/common.js";
+import {formatReleaseData, formatFilmDuration, capitalizeFirstLetter} from "../utils/common.js";
+
+const createGenreItemTemplate = (genre) => {
+  return `
+  <span class="film-details__genre">${genre}</span>`;
+};
 
 const createFilmInfoTemplate = (film) => {
-  const {title, description, poster, rating, releaseDate} = film;
+  const {
+    title,
+    description,
+    poster,
+    rating,
+    releaseDate,
+    genres,
+    director,
+    writers,
+    actors,
+    runtime,
+    ageRating,
+    original,
+    country
+  } = film;
+
   const releaseFilmDate = formatReleaseData(releaseDate);
+  const filmDuration = formatFilmDuration(runtime);
+  const filmRating = rating.toFixed(1);
+  const filmDescription = capitalizeFirstLetter(description);
+
+  const createGenresTemplate = () => {
+    return genres.map((genre) => createGenreItemTemplate(genre)).join(``);
+  };
+
+  const genreTemplate = createGenresTemplate();
+
   return (
     `<div class="film-details__info-wrap">
       <div class="film-details__poster">
-        <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+        <img class="film-details__poster-img" src="./${poster}" alt="">
 
-        <p class="film-details__age">18+</p>
+        <p class="film-details__age">${ageRating}+</p>
       </div>
 
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
             <h3 class="film-details__title">${title}</h3>
-            <p class="film-details__title-original">Original: ${title}</p>
+            <p class="film-details__title-original">Original: ${original}</p>
           </div>
 
           <div class="film-details__rating">
-            <p class="film-details__total-rating">${rating}</p>
+            <p class="film-details__total-rating">${filmRating}</p>
           </div>
         </div>
 
         <table class="film-details__table">
           <tr class="film-details__row">
             <td class="film-details__term">Director</td>
-            <td class="film-details__cell">Anthony Mann</td>
+            <td class="film-details__cell">${director}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
+            <td class="film-details__cell">${writers}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-            <td class="film-details__cell">Erich von Stroheim, Mary Beth Hughes, Dan Duryea</td>
+            <td class="film-details__cell">${actors}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
@@ -43,23 +73,22 @@ const createFilmInfoTemplate = (film) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">1h 18m</td>
+            <td class="film-details__cell">${filmDuration}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">USA</td>
+            <td class="film-details__cell">${country}</td>
           </tr>
           <tr class="film-details__row">
-            <td class="film-details__term">Genres</td>
+            <td class="film-details__term">${genres.length > 1 ? `Genres` : `Genre`}</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">Drama</span>
-              <span class="film-details__genre">Film-Noir</span>
-              <span class="film-details__genre">Mystery</span></td>
+              ${genreTemplate}
+            </td>
           </tr>
         </table>
 
         <p class="film-details__film-description">
-          ${description}
+          ${filmDescription}
         </p>
       </div>
     </div>`

@@ -10,11 +10,12 @@ import {Mode, UserAction, UpdateType} from "../const.js";
 const body = document.querySelector(`body`);
 
 export default class FilmCard {
-  constructor(filmContainer, changeData, changeMode, commentsModel) {
+  constructor(filmContainer, changeData, changeMode, commentsModel, api) {
     this._filmCardContainer = filmContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._commentsModel = commentsModel;
+    this._api = api;
 
     this._mode = Mode.DEFAULT;
 
@@ -34,12 +35,11 @@ export default class FilmCard {
 
   init(film) {
     this._film = film;
-    this._comments = this._commentsModel.getCommentsByFilmId(this._film.id);
 
     const prevFilmCardComponent = this._filmCardComponent;
     const prevPopupComponent = this._popupComponent;
 
-    this._filmCardComponent = new FilmCardView(film, this._comments);
+    this._filmCardComponent = new FilmCardView(film);
     this._popupComponent = new PopupView();
 
 
@@ -64,7 +64,7 @@ export default class FilmCard {
 
     // если карточка фильма рисуется первый раз, просто отрисуй
     if (prevFilmCardComponent === null || prevPopupComponent === null) {
-      this._renderCard(film);
+      this._renderCard(this._film);
 
       if (this._film.isPopupOpen) {
         this._renderPopup();
@@ -103,6 +103,7 @@ export default class FilmCard {
 
   // метод для удаления всех попапов и переключения режима страницы
   resetView() {
+    // if (this._film.isPopupOpen) {
     if (this._mode !== Mode.DEFAULT) {
       this.destroyPopup();
     }
@@ -113,35 +114,52 @@ export default class FilmCard {
     render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
   }
 
+  _getComments() {
+    this._api.getComments(this._film)
+      .then((comments) => {
+        this._commentsModel.setComments(UpdateType.INIT_POPUP, comments, this._film);
+      })
+      .catch(() => {
+        this._commentsModel.setComments(UpdateType.INIT_POPUP, []);
+      });
+  }
+
   // метод для рендера попапа
   _renderPopup() {
+    this._getComments();
+
+    // this._mode = Mode.POPUP;
+    // this._film.isPopupOpen = true;
+  }
+
+  renderPopupDetails() {
     this._changeMode();
+    // рендер попапа без содержимого
     render(body, this._popupComponent, RenderPosition.BEFOREEND);
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._popupComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
-    this._renderPopupDetails();
-
     this._mode = Mode.POPUP;
+
+    this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
+
+    // рендер содержимого попапа
+    this._renderFilmInfo(this._film);
+    this._renderFilmControl(this._film);
+    this._renderFilmComments();
+
     this._film.isPopupOpen = true;
   }
 
-  _renderPopupDetails() {
-    this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
-    this._renderFilmInfo();
-    this._renderFilmControl();
-    this._renderFilmComments();
-  }
-
   // метод для рендеринга информации о фильме
-  _renderFilmInfo() {
-    const filmInfoComponent = new FilmInfoView(this._film);
+  _renderFilmInfo(film) {
+    const filmInfoComponent = new FilmInfoView(film);
     render(this._filmInfoContainer, filmInfoComponent, RenderPosition.BEFOREEND);
   }
 
   // метод для рендеринга кнопок под информацией о фильме
-  _renderFilmControl() {
-    const infoControlComponent = new FilmInfoControlView(this._film);
+  _renderFilmControl(film) {
+    const infoControlComponent = new FilmInfoControlView(film);
     render(this._filmInfoContainer, infoControlComponent, RenderPosition.BEFOREEND);
 
     infoControlComponent.setWatchlistChangeHandler(this._handleWatchlistClick);
@@ -151,9 +169,11 @@ export default class FilmCard {
 
   // метод для рендеринга комментариев
   _renderFilmComments() {
-    this._filmCommentsComponent = new FilmCommentsView(this._comments, this._film);
+    this._comments = this._commentsModel.getComments();
 
+    this._filmCommentsComponent = new FilmCommentsView(this._comments, this._film);
     this._commentsContainer = this._filmCommentsComponent.getElement().querySelector(`.film-details__comments-list`);
+
     this._filmCommentsComponent.setFormSubmitClickHandler(this._handleFormSubmit);
 
     // рендер секции комментариев к фильму

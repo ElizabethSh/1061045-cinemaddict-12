@@ -1,7 +1,6 @@
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
-import {generateId} from "../utils/common.js";
-import {generateCurrendDate} from "../mock/comment.js";
+import {generateId, generateCurrendDate} from "../utils/common.js";
 
 const BLANK_COMMENT = {
   id: generateId(),
@@ -96,7 +95,7 @@ export default class FilmComments extends AbstractView {
   }
 
   _formSubmitClickHandler(evt) {
-    if (evt.ctrlKey && evt.keyCode === 13) {
+    if ((evt.ctrlKey && evt.keyCode === 13) || (evt.keyCode === 13 && evt.metaKey)) {
       evt.preventDefault();
       this._callback.formSubmit(FilmComments.parseCommentToData(this._data, this._film));
     }

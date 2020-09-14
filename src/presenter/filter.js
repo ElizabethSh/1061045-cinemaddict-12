@@ -5,10 +5,11 @@ import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
 
 export default class Filter {
-  constructor(filterContainer, filterModel, FilmsModel) {
+  constructor(filterContainer, filterModel, FilmsModel, selectMenuItem) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = FilmsModel;
+    this._selectMenuItem = selectMenuItem;
     this._currentFilter = null;
     this._mainNavigationComponent = null;
 
@@ -27,6 +28,7 @@ export default class Filter {
 
     this._mainNavigationComponent = new MainNavigationView(filters, this._currentFilter);
     this._mainNavigationComponent.setFilterTypeClickHandler(this._handleFilterTypeChange);
+    this._mainNavigationComponent.setStatsClickHandler(this._selectMenuItem);
 
     if (prevMainNavigationComponent === null) {
       render(this._filterContainer, this._mainNavigationComponent, RenderPosition.BEFOREEND);
