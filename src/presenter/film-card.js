@@ -9,6 +9,11 @@ import {Mode, UserAction, UpdateType} from "../const.js";
 
 const body = document.querySelector(`body`);
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`
+};
+
 export default class FilmCard {
   constructor(filmContainer, changeData, changeMode, commentsModel, api) {
     this._filmCardContainer = filmContainer;
@@ -106,6 +111,22 @@ export default class FilmCard {
     // if (this._film.isPopupOpen) {
     if (this._mode !== Mode.DEFAULT) {
       this.destroyPopup();
+    }
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._commentComponent.updateData({
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this._commentComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
     }
   }
 
