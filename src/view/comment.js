@@ -1,9 +1,9 @@
 import he from "he";
-import Abstract from "./abstract.js";
+import SmartView from "./smart.js";
 import {formatDate, capitalizeFirstLetter} from "../utils/common.js";
 
 const createCommentItemTemplate = (comment) => {
-  const {emoji, date, commentMessage, author} = comment;
+  const {emoji, date, commentMessage, author, isDisabled, isDeleting} = comment;
   const commentDate = formatDate(date);
   const userComment = capitalizeFirstLetter(commentMessage);
   return (
@@ -14,30 +14,36 @@ const createCommentItemTemplate = (comment) => {
        <div>
          <p class="film-details__comment-text">${he.encode(userComment)}</p>
          <p class="film-details__comment-info">
-           <span class="film-details__comment-author">${author}</span>
-           <span class="film-details__comment-day">${commentDate}</span>
-           <button class="film-details__comment-delete">Delete</button>
+            <span class="film-details__comment-author">${author}</span>
+            <span class="film-details__comment-day">${commentDate}</span>
+            <button class="film-details__comment-delete" ${isDisabled ? `disabled` : ``}>
+              ${isDeleting ? `Deleting...` : `Delete`}
+            </button>
          </p>
        </div>
      </li>`
   );
 };
 
-export default class Comment extends Abstract {
+export default class Comment extends SmartView {
   constructor(comment) {
     super();
-    this._comment = comment;
+    this._data = Comment.parseCommentToData(comment);
 
     this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
   }
 
+  restoreHandlers() {
+    this.setCommentDeleteClickHandler(this._callback.deleteClick);
+  }
+
   _getTemplate() {
-    return createCommentItemTemplate(this._comment);
+    return createCommentItemTemplate(this._data);
   }
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(this._comment);
+    this._callback.deleteClick(Comment.parseDataToComment(this._data));
   }
 
   setCommentDeleteClickHandler(callback) {
@@ -45,5 +51,24 @@ export default class Comment extends Abstract {
     this.getElement()
         .querySelector(`.film-details__comment-delete`)
         .addEventListener(`click`, this._commentDeleteClickHandler);
+  }
+
+  static parseCommentToData(comment) {
+    return Object.assign(
+        {},
+        comment,
+        {
+          isDisabled: false,
+          isDeleting: false
+        }
+    );
+  }
+
+  static parseDataToComment(data) {
+    data = Object.assign({}, data);
+
+    delete data.isDeleting;
+
+    return data;
   }
 }
