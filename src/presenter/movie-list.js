@@ -136,7 +136,7 @@ export default class MovieList {
         break;
 
       case UpdateType.INIT_POPUP:
-        this._filmCardPresenter.renderPopupDetails(data);
+        this._filmPresenter[data.id].renderPopupDetails(data);
         break;
     }
   }
