@@ -8,7 +8,6 @@ import FilterModel from "./model/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
 import {MenuItem, UpdateType} from "./const.js";
 import Api from "./api.js";
-
 import FilterPresenter from "./presenter/filter.js";
 
 const AUTORIZATION = `Basic 4h7fbdskj854j`;
@@ -58,13 +57,12 @@ filterPresenter.init();
 // MOVIE-LIST
 movieListPresenter.init();
 
-// FOOTER
-render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()).getElement(), RenderPosition.BEFOREEND);
-
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
+    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()).getElement(), RenderPosition.BEFOREEND);
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()).getElement(), RenderPosition.BEFOREEND);
   });
