@@ -64,7 +64,7 @@ export default class FilmCard {
 
     // если карточка фильма рисуется первый раз, просто отрисуй
     if (prevFilmCardComponent === null || prevPopupComponent === null) {
-      this._renderCard(film);
+      this._renderCard(this._film);
 
       if (this._film.isPopupOpen) {
         this._renderPopup();
@@ -103,6 +103,7 @@ export default class FilmCard {
 
   // метод для удаления всех попапов и переключения режима страницы
   resetView() {
+    // if (this._film.isPopupOpen) {
     if (this._mode !== Mode.DEFAULT) {
       this.destroyPopup();
     }
@@ -131,21 +132,23 @@ export default class FilmCard {
     // this._film.isPopupOpen = true;
   }
 
-  renderPopupDetails(film) {
+  renderPopupDetails() {
+    this._changeMode();
     // рендер попапа без содержимого
     render(body, this._popupComponent, RenderPosition.BEFOREEND);
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._popupComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
     this._mode = Mode.POPUP;
-    this._film.isPopupOpen = true;
 
     this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
 
     // рендер содержимого попапа
-    this._renderFilmInfo(film);
-    this._renderFilmControl(film);
+    this._renderFilmInfo(this._film);
+    this._renderFilmControl(this._film);
     this._renderFilmComments();
+
+    this._film.isPopupOpen = true;
   }
 
   // метод для рендеринга информации о фильме
