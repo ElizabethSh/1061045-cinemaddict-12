@@ -11,7 +11,7 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {SortType, UserAction, UpdateType/* , MenuItem*/} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 import {filter} from "../utils/filter.js";
-import { State } from "./film-card.js";
+import {State} from "./film-card.js";
 
 const MAX_FILMS_PER_STEP = 5;
 const TOP_RATED_TITLE = `Top Rated`;
@@ -98,9 +98,14 @@ export default class MovieList {
         break;
 
       case UserAction.ADD_COMMENT:
-        this._api.addComment(update, film).then((responce) => {
-          this._commentsModel.addComment(updateType, responce, film);
-        });
+        this._filmPresenter[film.id].setViewState(State.SAVING);
+        this._api.addComment(update, film)
+          .then((responce) => {
+            this._commentsModel.addComment(updateType, responce, film);
+          })
+          .catch(() => {
+            this._filmPresenter[film.id].setAborting();
+          });
         break;
 
       case UserAction.DELETE_COMMENT:
