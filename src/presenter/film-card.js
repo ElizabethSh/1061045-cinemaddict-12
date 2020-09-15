@@ -127,9 +127,7 @@ export default class FilmCard {
 
     switch (state) {
       case State.SAVING:
-        this._commentComponent.updateData({
-          isDisabled: true,
-        });
+        this._filmCommentsComponent.disableForm();
         break;
 
       case State.DELETING:
@@ -143,6 +141,11 @@ export default class FilmCard {
         this._commentView[comment.id].shake(resetFormState);
         break;
     }
+  }
+
+  setAborting() {
+    this._filmCommentsComponent.shake();
+    this._filmCommentsComponent.enableForm();
   }
 
   // метод для рендера карточки фильма
