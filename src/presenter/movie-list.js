@@ -104,14 +104,18 @@ export default class MovieList {
         break;
 
       case UserAction.DELETE_COMMENT:
-        this._filmPresenter[film.id].setViewState(State.DELETING);
+        this._filmPresenter[film.id].setViewState(State.DELETING, update);
         // метод удаления комментария на сервере
         // ничего не возвращает.
         // Ведь что можно вернуть при удалении комментария?
         // Поэтому в модель мы всё также передаем update
-        this._api.deleteComment(update, film).then(() => {
-          this._commentsModel.deleteComment(updateType, update, film);
-        });
+        this._api.deleteComment(update, film)
+          .then(() => {
+            this._commentsModel.deleteComment(updateType, update, film);
+          })
+          .catch(() => {
+            this._filmPresenter[film.id].setViewState(State.ABORTING, update);
+          });
         break;
     }
   }
