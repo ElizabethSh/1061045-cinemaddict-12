@@ -37,3 +37,11 @@ export const MenuItem = {
   FILTERS: `FILTERS`,
   STATISTICS: `STATISTICS`
 };
+
+export const StatsPeriod = {
+  ALL_TIME: `All time`,
+  TODAY: `Today`,
+  WEEK: `Week`,
+  MONTH: `Month`,
+  YEAR: `Year`,
+};
