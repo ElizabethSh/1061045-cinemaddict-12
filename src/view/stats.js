@@ -1,17 +1,36 @@
 import SmartView from "../view/smart.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {StatsPeriod} from "../const.js";
+import {
+  convertTextToKebabCase,
+  convertToTextFromKebabCase,
+} from "../utils/common.js";
+import {
+  countWatchedFilmsInDateRange,
+  getSortedGenres,
+  getHoursAndMinutes,
+  getTopGenre,
+  getTotalDuration
+} from "../utils/stats.js";
 
 const BAR_HEIGHT = 50;
+const timeIntervals = Object.values(StatsPeriod);
 
-const renderFilmsByGenresChart = (statisticCtx) => {
+const renderFilmsByGenresChart = (statisticCtx, watchedFilms, period) => {
+  const watchedFilmsInDateRange = countWatchedFilmsInDateRange(watchedFilms, period);
+  const sortedGenres = new Map(getSortedGenres(watchedFilmsInDateRange));
+  const labels = [...sortedGenres.keys()];
+  const data = [...sortedGenres.values()];
+  statisticCtx.height = BAR_HEIGHT * labels.length;
+
   return new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: [`Sci-Fi`, `Animation`, `Fantasy`, `Comedy`, `TV Series`],
+      labels,
       datasets: [{
-        data: [11, 8, 7, 4, 3], // сюда нужно передать кол-во фильмов по каждому жанру
+        data,
         backgroundColor: `#ffe800`,
         hoverBackgroundColor: `#ffe800`,
         anchor: `start`
@@ -63,7 +82,35 @@ const renderFilmsByGenresChart = (statisticCtx) => {
   });
 };
 
-const createStatisticsTemplate = () => {
+const createPeriodMenuItemTemplate = (timeInterval, activePeriod) => {
+  const periodValue = convertTextToKebabCase(timeInterval);
+  return `<input type="radio"
+    class="statistic__filters-input visually-hidden"
+    name="statistic-filter"
+    id="statistic-${periodValue}"
+    value="${periodValue}"
+    ${timeInterval === activePeriod ? `checked` : ``}
+    >
+  <label for="statistic-${periodValue}" class="statistic__filters-label">
+    ${timeInterval}
+  </label>`;
+};
+
+const createPeriodMenuTemplate = (activePeriod) => {
+  return timeIntervals.map((timeInterval) => createPeriodMenuItemTemplate(timeInterval, activePeriod)).join(``);
+};
+
+const createStatisticsTemplate = (data) => {
+  const {watchedFilms, period} = data;
+  const watchedFilmsInDateRange = countWatchedFilmsInDateRange(watchedFilms, period);
+
+  const watchedFilmsCount = watchedFilmsInDateRange.length;
+  const totalDuration = getHoursAndMinutes(getTotalDuration(watchedFilmsInDateRange));
+  const {hours, minutes} = totalDuration;
+  const topGenre = getTopGenre(watchedFilmsInDateRange);
+
+  const periodsMenuTemplate = createPeriodMenuTemplate(period);
+
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
@@ -74,35 +121,22 @@ const createStatisticsTemplate = () => {
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
-      <label for="statistic-all-time" class="statistic__filters-label">All time</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
-      <label for="statistic-today" class="statistic__filters-label">Today</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
-      <label for="statistic-week" class="statistic__filters-label">Week</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
-      <label for="statistic-month" class="statistic__filters-label">Month</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
-      <label for="statistic-year" class="statistic__filters-label">Year</label>
+      ${periodsMenuTemplate}
     </form>
 
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">22<span class="statistic__item-description">movies</span>
+        <p class="statistic__item-text">${watchedFilmsCount}<span class="statistic__item-description">movies</span>
         </p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">130 <span class="statistic__item-description">h</span> 22 <span class="statistic__item-description">m</span></p>
+        <p class="statistic__item-text">${hours} <span class="statistic__item-description">h</span>${minutes}<span class="statistic__item-description">m</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">Sci-Fi</p>
+        <p class="statistic__item-text">${topGenre}</p>
       </li>
     </ul>
 
@@ -113,33 +147,64 @@ const createStatisticsTemplate = () => {
 };
 
 export default class Statistics extends SmartView {
-  constructor() {
-
-    // this._data = {}  приехало из smarta
+  constructor(films, period) {
     super();
+    // watchedFilms - всего просмотрено фильмов за все время
+    const watchedFilms = films.filter((film) => film.isHistory);
 
+    this._data = {
+      watchedFilms,
+      period
+    };
+
+    this._periodClickHandler = this._periodClickHandler.bind(this);
     this._setCharts();
+    this._setPeriod();
     this._filmsByGenresChart = null;
-  }
-
-  _getTemplate() {
-    return createStatisticsTemplate();
   }
 
   restoreHandlers() {
     this._setCharts();
+    this._setPeriod();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._filmsByGenresChart !== null) {
+      this._filmsByGenresChart = null;
+    }
+  }
+
+  _getTemplate() {
+    return createStatisticsTemplate(this._data);
+  }
+
+  _periodClickHandler(evt) {
+    evt.preventDefault();
+    const periodValue = evt.target.value;
+    const adaptedValue = convertToTextFromKebabCase(periodValue);
+
+    this.updateData({
+      period: adaptedValue
+    });
+  }
+
+  _setPeriod() {
+    this.getElement()
+        .querySelector(`.statistic__filters`)
+        .addEventListener(`change`, this._periodClickHandler);
   }
 
   _setCharts() {
-    // Нужно отрисовать график
     if (this._filmsByGenresChart !== null) {
       this._filmsByGenresChart = null;
     }
 
-    const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
-    // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
-    statisticCtx.height = BAR_HEIGHT * 5;
+    const {watchedFilms, period} = this._data;
 
-    this._filmsByGenresChart = renderFilmsByGenresChart(statisticCtx, BAR_HEIGHT);
+    const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
+
+    this._filmsByGenresChart = renderFilmsByGenresChart(statisticCtx, watchedFilms, period);
   }
 }
