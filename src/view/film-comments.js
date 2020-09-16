@@ -1,18 +1,22 @@
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
-import {generateId, generateCurrendDate} from "../utils/common.js";
 
 const BLANK_COMMENT = {
-  id: generateId(),
-  filmId: null,
-  emoji: `smile.png`,
+  emoji: `smile`,
   commentMessage: ``,
-  author: `Anonim`,
-  date: generateCurrendDate()
+  date: new Date()
 };
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 const createEmojiItemTemplate = (emoji) => {
-  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
+  return `<input
+            class="film-details__emoji-item visually-hidden"
+            name="comment-emoji"
+            type="radio"
+            id="emoji-${emoji}"
+            value="${emoji}"
+          >
     <label class="film-details__emoji-label" for="emoji-${emoji}">
       <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji-${emoji}">
     </label>`;
@@ -39,7 +43,12 @@ const createFilmCommentsTemplate = (comments) => {
           <div for="add-emoji" class="film-details__add-emoji-label"></div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea
+              class="film-details__comment-input"
+              placeholder="Select reaction below and write comment here"
+              name="comment"
+              >
+            </textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -74,6 +83,35 @@ export default class FilmComments extends AbstractView {
         .addEventListener(`input`, this._commentMessageInputHandler);
   }
 
+  // метод для обновления данных
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+        {},
+        this._data,
+        update
+    );
+  }
+
+  disableForm() {
+    const form = this
+      .getElement()
+      .querySelector(`.film-details__comment-input`);
+
+    form.disabled = true;
+  }
+
+  enableForm() {
+    const form = this
+      .getElement()
+      .querySelector(`.film-details__comment-input`);
+
+    form.disabled = false;
+  }
+
   _getTemplate() {
     return createFilmCommentsTemplate(this._filmComments);
   }
@@ -90,14 +128,14 @@ export default class FilmComments extends AbstractView {
 
     userEmoji.innerHTML = `<img src="./images/emoji/${emoji}.png" width="60" height="60" alt="emoji-${emoji}">`;
     this.updateData({
-      emoji: `${emoji}.png`
+      emoji: `${emoji}`
     });
   }
 
   _formSubmitClickHandler(evt) {
     if ((evt.ctrlKey && evt.keyCode === 13) || (evt.keyCode === 13 && evt.metaKey)) {
       evt.preventDefault();
-      this._callback.formSubmit(FilmComments.parseCommentToData(this._data, this._film));
+      this._callback.formSubmit(FilmComments.parseCommentToData(this._data));
     }
   }
 
@@ -115,27 +153,24 @@ export default class FilmComments extends AbstractView {
         .addEventListener(`keydown`, this._formSubmitClickHandler);
   }
 
+  shake() {
+    this
+      .getElement()
+      .querySelector(`.film-details__comment-label`)
+      .style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
 
-  // метод для обновления данных
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-        {},
-        this._data,
-        update
-    );
+    setTimeout(() => {
+      this
+        .getElement()
+        .querySelector(`.film-details__comment-label`)
+        .style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
-  static parseCommentToData(newComment, film) {
+  static parseCommentToData(newComment) {
     return Object.assign(
         {},
-        newComment,
-        {
-          filmId: film.id
-        }
+        newComment
     );
   }
 

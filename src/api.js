@@ -3,7 +3,9 @@ import CommentsModel from "./model/comments.js";
 
 const Method = {
   GET: `GET`,
-  PUT: `PUT`
+  PUT: `PUT`,
+  POST: `POST`,
+  DELETE: `DELETE`
 };
 
 const SuccessHTTPStatusRange = {
@@ -57,6 +59,24 @@ export default class Api {
       .then(FilmsModel.adaptToClient);
   }
 
+  addComment(comment, film) {
+    return this._load({
+      url: `/comments/${film.id}`,
+      method: Method.POST,
+      body: JSON.stringify(CommentsModel.adaptToServer(comment)),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+    .then(Api.toJSON)
+    .then(CommentsModel.adaptToClient);
+  }
+
+  deleteComment(comment) {
+    return this._load({
+      url: `/comments/${comment.id}`,
+      method: Method.DELETE
+    });
+  }
+
   _load({
     url,
     method = Method.GET,
@@ -68,7 +88,7 @@ export default class Api {
     // вызываем fetch и передаем ему полный путь к желаемому ресурсу
     return fetch(
         // полный путь состоит из имени сервера(this._endPoint) и адреса ресурса (url)
-        // например доступ к задачам будет по ресурсу tasks - это и будет url
+        // например доступ к задачам будет по ресурсу films - это и будет url
         `${this._endPoint}/${url}`,
         {method, body, headers}
     )

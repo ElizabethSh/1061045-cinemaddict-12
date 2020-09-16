@@ -11,6 +11,7 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {SortType, UserAction, UpdateType/* , MenuItem*/} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 import {filter} from "../utils/filter.js";
+import {State} from "./film-card.js";
 
 const MAX_FILMS_PER_STEP = 5;
 const TOP_RATED_TITLE = `Top Rated`;
@@ -97,11 +98,29 @@ export default class MovieList {
         break;
 
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update, film);
+        this._filmPresenter[film.id].setViewState(State.SAVING);
+        this._api.addComment(update, film)
+          .then((responce) => {
+            this._commentsModel.addComment(updateType, responce, film);
+          })
+          .catch(() => {
+            this._filmPresenter[film.id].setAborting();
+          });
         break;
 
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update, film);
+        this._filmPresenter[film.id].setViewState(State.DELETING, update);
+        // метод удаления комментария на сервере
+        // ничего не возвращает.
+        // Ведь что можно вернуть при удалении комментария?
+        // Поэтому в модель мы всё также передаем update
+        this._api.deleteComment(update, film)
+          .then(() => {
+            this._commentsModel.deleteComment(updateType, update, film);
+          })
+          .catch(() => {
+            this._filmPresenter[film.id].setViewState(State.ABORTING, update);
+          });
         break;
     }
   }

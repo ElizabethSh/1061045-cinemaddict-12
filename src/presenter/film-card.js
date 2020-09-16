@@ -9,6 +9,12 @@ import {Mode, UserAction, UpdateType} from "../const.js";
 
 const body = document.querySelector(`body`);
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 export default class FilmCard {
   constructor(filmContainer, changeData, changeMode, commentsModel, api) {
     this._filmCardContainer = filmContainer;
@@ -18,6 +24,7 @@ export default class FilmCard {
     this._api = api;
 
     this._mode = Mode.DEFAULT;
+    this._commentView = {}; // observer
 
     this._filmCardComponent = null;
     this._popupComponent = null;
@@ -99,6 +106,7 @@ export default class FilmCard {
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
     this._film.isPopupOpen = false;
+    this._commentView = {};
   }
 
   // метод для удаления всех попапов и переключения режима страницы
@@ -107,6 +115,37 @@ export default class FilmCard {
     if (this._mode !== Mode.DEFAULT) {
       this.destroyPopup();
     }
+  }
+
+  setViewState(state, comment) {
+    const resetFormState = () => {
+      this._commentView[comment.id].updateData({
+        isDisabled: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._filmCommentsComponent.disableForm();
+        break;
+
+      case State.DELETING:
+        this._commentView[comment.id].updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+
+      case State.ABORTING:
+        this._commentView[comment.id].shake(resetFormState);
+        break;
+    }
+  }
+
+  setAborting() {
+    this._filmCommentsComponent.shake();
+    this._filmCommentsComponent.enableForm();
   }
 
   // метод для рендера карточки фильма
@@ -188,6 +227,8 @@ export default class FilmCard {
     this._commentComponent = new CommentView(comment);
     this._commentComponent.setCommentDeleteClickHandler(this._handleDeleteClick);
     render(this._commentsContainer, this._commentComponent, RenderPosition.BEFOREEND);
+
+    this._commentView[comment.id] = this._commentComponent;
   }
 
   _escKeyDownHandler(evt) {

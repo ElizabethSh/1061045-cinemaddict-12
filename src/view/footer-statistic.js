@@ -2,7 +2,6 @@ import AbstractView from "./abstract.js";
 
 const createFooterStatisticTemplate = (films) => {
   const filmsCount = films.length;
-  // console.log(films);
   return (
     `<p>${filmsCount} movies inside</p>`
   );

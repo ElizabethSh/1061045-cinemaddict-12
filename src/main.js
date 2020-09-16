@@ -1,12 +1,12 @@
 import ProfileView from "./view/profile.js";
 import FooterStatisticView from "./view/footer-statistic.js";
-// import StatisticsView from "./view/stats.js";
+import StatisticsView from "./view/stats.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilmsModel from "./model/films.js";
 import CommentsModel from "./model/comments.js";
 import FilterModel from "./model/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
-import {MenuItem, UpdateType} from "./const.js";
+import {MenuItem, StatsPeriod, UpdateType} from "./const.js";
 import Api from "./api.js";
 import FilterPresenter from "./presenter/filter.js";
 
@@ -51,18 +51,23 @@ filterPresenter.init();
 
 // временно закомментировано
 
-// const statisticsComponent = new StatisticsView();
+// const statisticsComponent = new StatisticsView(filmsModel.getFilms());
 // render(siteMain, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
 
 // MOVIE-LIST
-movieListPresenter.init();
+// movieListPresenter.init();
 
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
-    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()).getElement(), RenderPosition.BEFOREEND);
+
+    // временно, пока не настроено переключение на статистику и обратно
+    const statisticsComponent = new StatisticsView(filmsModel.getFilms(), StatsPeriod.ALL_TIME);
+    render(siteMain, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
+
+    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
-    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()).getElement(), RenderPosition.BEFOREEND);
+    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
   });

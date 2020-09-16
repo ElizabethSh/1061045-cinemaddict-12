@@ -8,11 +8,6 @@ export const capitalizeFirstLetter = (string) => {
   return string[0].toUpperCase() + string.slice(1);
 };
 
-export const generateCurrendDate = () => {
-  const currentDate = new Date();
-  return formatDate(currentDate);
-};
-
 export const formatReleaseData = (date) => {
   if (!(date instanceof Date)) {
     return ``;
@@ -32,25 +27,14 @@ export const formatDate = (date) => {
   return moment(date).format(`YYYY/MM/DD HH:mm`);
 };
 
-// не забыть удалить!
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
 export const formatFilmDuration = (durationInMinutes) => {
   return moment.utc().startOf(`day`).add({minutes: durationInMinutes}).format(`H[h] mm[m]`);
 };
 
-// не забыть удалить!
-export const generateArrayElement = (array) => {
-  return array[getRandomInteger(0, array.length - 1)];
+export const convertTextToKebabCase = (text) => text.toLowerCase().split(` `).join(`-`);
+
+export const convertToTextFromKebabCase = (string) => {
+  const stringInLowerCase = string.split(`-`).join(` `);
+  return stringInLowerCase[0].toUpperCase() + stringInLowerCase.slice(1);
 };
-
-// функция генерации случайного числа из диапозона
-// не забыть удалить!
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
 
