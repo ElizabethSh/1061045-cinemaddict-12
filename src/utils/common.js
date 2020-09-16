@@ -31,3 +31,10 @@ export const formatFilmDuration = (durationInMinutes) => {
   return moment.utc().startOf(`day`).add({minutes: durationInMinutes}).format(`H[h] mm[m]`);
 };
 
+export const convertTextToKebabCase = (text) => text.toLowerCase().split(` `).join(`-`);
+
+export const convertToTextFromKebabCase = (string) => {
+  const stringInLowerCase = string.split(`-`).join(` `);
+  return stringInLowerCase[0].toUpperCase() + stringInLowerCase.slice(1);
+};
+
