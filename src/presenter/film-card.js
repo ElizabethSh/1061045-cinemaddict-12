@@ -128,7 +128,6 @@ export default class FilmCard {
 
     switch (state) {
       case State.UPDATING:
-        console.log(`UPDATING`);
         this._filmControlComponent.disableButtons();
         break;
 
