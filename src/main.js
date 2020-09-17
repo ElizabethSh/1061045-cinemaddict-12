@@ -13,7 +13,7 @@ import FilterPresenter from "./presenter/filter.js";
 const AUTORIZATION = `Basic 4h7fbdskj854j`;
 const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 
-const siteHeader = document.querySelector(`.header`);
+// const siteHeader = document.querySelector(`.header`);
 const siteMain = document.querySelector(`.main`);
 const siteFooter = document.querySelector(`.footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
@@ -46,10 +46,6 @@ const handleSiteMenuClick = (menuType, filterType) => {
       remove(statisticsComponent);
       movieListPresenter.destroy();
       // Показать доску c выбранным фильтром
-      const currentFilter = filterModel.getFilter();
-      if (currentFilter === filterType) {
-        return;
-      }
 
       filterModel.setFilter(UpdateType.MAJOR, filterType);
       movieListPresenter.init();
@@ -66,11 +62,13 @@ api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
 
-    render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
+    movieListPresenter.renderProfile();
+    // render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
     render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
-    render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
+    movieListPresenter.renderProfile();
+    // render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
     render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
   });
