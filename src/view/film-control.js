@@ -16,7 +16,7 @@ const createFilmInfoControlsTemplate = (film) => {
   );
 };
 
-export default class FilmInfoControl extends AbstractView {
+export default class FilmControl extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
