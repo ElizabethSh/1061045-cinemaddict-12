@@ -1,20 +1,19 @@
 import MainNavigationView from "../view/main-navigation.js";
-import {FilterType, UpdateType} from "../const.js";
+import {FilterType} from "../const.js";
 import {filter} from "../utils/filter.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
 
 export default class Filter {
-  constructor(filterContainer, filterModel, FilmsModel, selectMenuItem) {
+  constructor(filterContainer, filterModel, filmsModel, selectMenuItem) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
-    this._filmsModel = FilmsModel;
+    this._filmsModel = filmsModel;
     this._selectMenuItem = selectMenuItem;
     this._currentFilter = null;
     this._mainNavigationComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -27,7 +26,7 @@ export default class Filter {
     const prevMainNavigationComponent = this._mainNavigationComponent;
 
     this._mainNavigationComponent = new MainNavigationView(filters, this._currentFilter);
-    this._mainNavigationComponent.setFilterTypeClickHandler(this._handleFilterTypeChange);
+    this._mainNavigationComponent.setFilterTypeClickHandler(this._selectMenuItem);
     this._mainNavigationComponent.setStatsClickHandler(this._selectMenuItem);
 
     if (prevMainNavigationComponent === null) {
@@ -40,14 +39,6 @@ export default class Filter {
 
   _handleModelEvent() {
     this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._currentFilter === filterType) {
-      return;
-    }
-
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
   _getFilters() {
