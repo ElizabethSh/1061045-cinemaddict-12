@@ -73,7 +73,7 @@ export const getSortedGenres = (films) => {
 
 export const getTopGenre = (films) => {
   if (!films.length) {
-    return `-`;
+    return ` `;
   }
   const sortedGenres = getSortedGenres(films);
   const [[topGenre]] = sortedGenres;
