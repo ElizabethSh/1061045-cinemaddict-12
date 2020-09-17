@@ -7,15 +7,19 @@ import ShowMoreButtonView from "../view/show-more-button.js";
 import LoadingView from "../view/loading.js";
 import FilmCardPresenter from "../presenter/film-card.js";
 import ExtraListPresenter from "../presenter/extra-list.js";
-import {render, RenderPosition, remove} from "../utils/render.js";
-import {SortType, UserAction, UpdateType/* , MenuItem*/} from "../const.js";
+import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {SortType, UserAction, UpdateType} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 import {filter} from "../utils/filter.js";
 import {State} from "./film-card.js";
 
+import ProfileView from "../view/profile.js";
+
 const MAX_FILMS_PER_STEP = 5;
 const TOP_RATED_TITLE = `Top Rated`;
 const MOST_COMMENT_TITLE = `Most commented`;
+
+const siteHeader = document.querySelector(`.header`);
 
 export default class MovieList {
   constructor(container, filmsModel, commentsModel, filterModel, api) {
@@ -40,6 +44,8 @@ export default class MovieList {
     this._noFilmComponent = new NoFilmView();
     this._loadingComponent = new LoadingView();
     this._showMoreButtonComponent = null;
+
+    this._profileComponent = null;
 
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -70,6 +76,19 @@ export default class MovieList {
     this._commentsModel.removeObserver(this._handleModelEvent);
   }
 
+  renderProfile() {
+    const prevProfileComponent = this._profileComponent;
+    this._profileComponent = new ProfileView(this._filmsModel.getFilms());
+
+    if (prevProfileComponent === null) {
+      render(siteHeader, this._profileComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    replace(this._profileComponent, prevProfileComponent);
+    remove(prevProfileComponent);
+  }
+
   _getFilms() {
     const filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms();
@@ -95,6 +114,7 @@ export default class MovieList {
     }
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+        // this._filmPresenter[update.id].setViewState(State.UPDATING);
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilm(updateType, response);
         });
@@ -142,11 +162,13 @@ export default class MovieList {
       case UpdateType.MINOR:
         // - обновить список
         this._clearMovieList();
+        this.renderProfile();
         this._renderAllFilmsList();
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску
         this._clearMovieList({resetRenderedFilmCount: true, resetSortType: true});
+        this.renderProfile();
         this._renderAllFilmsList();
         break;
 
@@ -194,7 +216,6 @@ export default class MovieList {
     const films = this._getFilms();
     const filmCount = films.length;
 
-    // может быть не нужно
     if (filmCount === 0) {
       // если фильмов нет, рендерим заглушку
       this._renderNoFilms();
