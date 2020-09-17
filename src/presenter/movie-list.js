@@ -90,6 +90,9 @@ export default class MovieList {
   // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
   // update - обновленные данные
   _handleViewAction(actionType, updateType, update, film) {
+    if (update.isPopupOpen) {
+      this._filmsModel.setOpenedPopup(update.id);
+    }
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update).then((response) => {
@@ -229,11 +232,14 @@ export default class MovieList {
 
   // метод для рендеринга компонентов карточки с фильмом
   _renderFilmCard(film) {
-    this._filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._api);
-    this._filmCardPresenter.init(film);
+    const filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._api);
+    if (this._filmsModel.getOpenedPopup() === film.id) {
+      film.isPopupOpen = true;
+    }
+    filmCardPresenter.init(film);
 
     // сохраняет в observer все фильмы с ключами = id
-    this._filmPresenter[film.id] = this._filmCardPresenter;
+    this._filmPresenter[film.id] = filmCardPresenter;
   }
 
   // метод по рендерингу кнопки допоказа карточек фильмов
@@ -259,6 +265,7 @@ export default class MovieList {
   }
 
   _handleModeChange() {
+    this._filmsModel.setOpenedPopup(null);
     Object.values(this._filmPresenter)
           .forEach((presenter) => presenter.resetView());
   }
