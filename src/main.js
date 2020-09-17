@@ -1,4 +1,4 @@
-import ProfileView from "./view/profile.js";
+// import ProfileView from "./view/profile.js";
 import FooterStatisticView from "./view/footer-statistic.js";
 import StatisticsView from "./view/stats.js";
 import MovieListPresenter from "./presenter/movie-list.js";
