@@ -21,11 +21,26 @@ export default class FilmControl extends AbstractView {
     super();
     this._film = film;
 
+    this._buttons = this.getElement()
+                        .querySelectorAll(`.film-details__control-input`);
+
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._alreadyWatchedClickHandler = this._alreadyWatchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-
   }
+
+  disableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = true;
+    });
+  }
+
+  enableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+
   _getTemplate() {
     return createFilmInfoControlsTemplate(this._film);
   }
