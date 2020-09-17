@@ -67,6 +67,10 @@ export default class FilmComments extends AbstractView {
     this._filmComments = filmComments;
     this._film = film;
 
+    this._form = this
+      .getElement()
+      .querySelector(`.film-details__comment-input`);
+
     this._newComment = BLANK_COMMENT;
     this._data = this._newComment;
 
@@ -97,19 +101,11 @@ export default class FilmComments extends AbstractView {
   }
 
   disableForm() {
-    const form = this
-      .getElement()
-      .querySelector(`.film-details__comment-input`);
-
-    form.disabled = true;
+    this._form.disabled = true;
   }
 
   enableForm() {
-    const form = this
-      .getElement()
-      .querySelector(`.film-details__comment-input`);
-
-    form.disabled = false;
+    this._form.disabled = false;
   }
 
   _getTemplate() {
