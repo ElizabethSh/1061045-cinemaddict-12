@@ -1,7 +1,7 @@
 import FilmCardView from "../view/film-card.js";
 import PopupView from "../view/popup.js";
 import FilmInfoView from "../view/film-info.js";
-import FilmInfoControlView from "../view/film-control.js";
+import FilmControlView from "../view/film-control.js";
 import FilmCommentsView from "../view/film-comments.js";
 import CommentView from "../view/comment.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
@@ -10,6 +10,7 @@ import {Mode, UserAction, UpdateType} from "../const.js";
 const body = document.querySelector(`body`);
 
 export const State = {
+  UPDATING: `UPDATING`,
   SAVING: `SAVING`,
   DELETING: `DELETING`,
   ABORTING: `ABORTING`
@@ -126,6 +127,11 @@ export default class FilmCard {
     };
 
     switch (state) {
+      case State.UPDATING:
+        console.log(`UPDATING`);
+        this._filmControlComponent.disableButtons();
+        break;
+
       case State.SAVING:
         this._filmCommentsComponent.disableForm();
         break;
@@ -146,6 +152,7 @@ export default class FilmCard {
   setAborting() {
     this._filmCommentsComponent.shake();
     this._filmCommentsComponent.enableForm();
+    this._filmControlComponent.enableButtons();
   }
 
   // метод для рендера карточки фильма
@@ -198,12 +205,12 @@ export default class FilmCard {
 
   // метод для рендеринга кнопок под информацией о фильме
   _renderFilmControl(film) {
-    const infoControlComponent = new FilmInfoControlView(film);
-    render(this._filmInfoContainer, infoControlComponent, RenderPosition.BEFOREEND);
+    this._filmControlComponent = new FilmControlView(film);
+    render(this._filmInfoContainer, this._filmControlComponent, RenderPosition.BEFOREEND);
 
-    infoControlComponent.setWatchlistChangeHandler(this._handleWatchlistClick);
-    infoControlComponent.setAlreadyWatchedChangeHandler(this._handleAlreadyWatchedClick);
-    infoControlComponent.setFavoriteChangeHandler(this._handleFavoriteClick);
+    this._filmControlComponent.setWatchlistChangeHandler(this._handleWatchlistClick);
+    this._filmControlComponent.setAlreadyWatchedChangeHandler(this._handleAlreadyWatchedClick);
+    this._filmControlComponent.setFavoriteChangeHandler(this._handleFavoriteClick);
   }
 
   // метод для рендеринга комментариев
