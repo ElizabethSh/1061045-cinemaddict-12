@@ -5,7 +5,7 @@ import MovieListPresenter from "./presenter/movie-list.js";
 import FilmsModel from "./model/films.js";
 import CommentsModel from "./model/comments.js";
 import FilterModel from "./model/filter.js";
-import {render, RenderPosition} from "./utils/render.js";
+import {remove, render, RenderPosition} from "./utils/render.js";
 import {MenuItem, StatsPeriod, UpdateType} from "./const.js";
 import Api from "./api.js";
 import FilterPresenter from "./presenter/filter.js";
@@ -26,48 +26,51 @@ const filterModel = new FilterModel();
 
 const movieListPresenter = new MovieListPresenter(siteMain, filmsModel, commentsModel, filterModel, api);
 
-// HEADER
-render(siteHeader, new ProfileView(), RenderPosition.BEFOREEND);
-
 // MAIN
+let statisticsComponent = null;
 
 // MAIN-NAVIGATION
-const handleSiteMenuClick = (menuItem) => {
-  switch (menuItem) {
+const handleSiteMenuClick = (menuType, filterType) => {
+  switch (menuType) {
     case MenuItem.STATISTICS:
       // Скрыть доску
       movieListPresenter.destroy();
       // Показать статистику
+      statisticsComponent = new StatisticsView(filmsModel.getFilms(), StatsPeriod.ALL_TIME);
+      render(siteMain, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
       break;
+
 
     case MenuItem.FILTERS:
       // Скрыть статистику
+      remove(statisticsComponent);
+      movieListPresenter.destroy();
       // Показать доску c выбранным фильтром
+      const currentFilter = filterModel.getFilter();
+      if (currentFilter === filterType) {
+        return;
+      }
+
+      filterModel.setFilter(UpdateType.MAJOR, filterType);
+      movieListPresenter.init();
   }
 };
 
 const filterPresenter = new FilterPresenter(siteMain, filterModel, filmsModel, handleSiteMenuClick);
 filterPresenter.init();
 
-// временно закомментировано
-
-// const statisticsComponent = new StatisticsView(filmsModel.getFilms());
-// render(siteMain, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
-
 // MOVIE-LIST
-// movieListPresenter.init();
+movieListPresenter.init();
 
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
 
-    // временно, пока не настроено переключение на статистику и обратно
-    const statisticsComponent = new StatisticsView(filmsModel.getFilms(), StatsPeriod.ALL_TIME);
-    render(siteMain, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
-
+    render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
     render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
     render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
   });
