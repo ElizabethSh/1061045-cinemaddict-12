@@ -1,10 +1,11 @@
-import SmartView from "../view/smart.js";
+import SmartView from "./smart.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {StatsPeriod} from "../const.js";
+import {getRank} from "../utils/user-rank.js";
 import {
   convertTextToKebabCase,
-  convertToTextFromKebabCase,
+  convertToTextFromKebabCase
 } from "../utils/common.js";
 import {
   countWatchedFilmsInDateRange,
@@ -108,6 +109,7 @@ const createStatisticsTemplate = (data) => {
   const totalDuration = getHoursAndMinutes(getTotalDuration(watchedFilmsInDateRange));
   const {hours, minutes} = totalDuration;
   const topGenre = getTopGenre(watchedFilmsInDateRange);
+  const rank = getRank(watchedFilms);
 
   const periodsMenuTemplate = createPeriodMenuTemplate(period);
 
@@ -115,7 +117,7 @@ const createStatisticsTemplate = (data) => {
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Sci-Fighter</span>
+      <span class="statistic__rank-label">${rank}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
