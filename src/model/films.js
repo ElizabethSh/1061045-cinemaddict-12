@@ -4,6 +4,7 @@ export default class Films extends Observer {
   constructor() {
     super();
     this._films = [];
+    this._openedPopup = null;
   }
 
   setFilms(updateType, films) {
@@ -13,6 +14,14 @@ export default class Films extends Observer {
 
   getFilms() {
     return this._films;
+  }
+
+  setOpenedPopup(filmId) {
+    this._openedPopup = filmId;
+  }
+
+  getOpenedPopup() {
+    return this._openedPopup;
   }
 
   updateFilm(updateType, update) {
