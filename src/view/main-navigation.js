@@ -41,7 +41,12 @@ export default class MainNavigation extends AbstractView {
     }
 
     evt.preventDefault();
-    this._callback.filterTypeClick(evt.target.dataset.filterType);
+    const filterTypes = Object.values(FilterType);
+    const filterType = evt.target.dataset.filterType;
+    const isFilter = filterTypes.includes(filterType);
+    const menuCategory = isFilter ? MenuItem.FILTERS : filterType;
+
+    this._callback.filterTypeClick(menuCategory, filterType);
   }
 
   _statsClickHandler(evt) {
