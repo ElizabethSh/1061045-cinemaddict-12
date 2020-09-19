@@ -18,7 +18,7 @@ export const State = {
 
 export default class FilmCard {
   constructor(filmContainer, changeData, changeMode, commentsModel, api) {
-    this._filmCardContainer = filmContainer;
+    this._container = filmContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._commentsModel = commentsModel;
@@ -28,7 +28,7 @@ export default class FilmCard {
 
     this._commentView = {}; // observer
 
-    this._filmCardComponent = null;
+    this._cardComponent = null;
     this._popupComponent = null;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -45,40 +45,40 @@ export default class FilmCard {
   init(film) {
     this._film = film;
 
-    const prevFilmCardComponent = this._filmCardComponent;
+    const prevCardComponent = this._cardComponent;
     const prevPopupComponent = this._popupComponent;
 
-    this._filmCardComponent = new FilmCardView(film);
+    this._cardComponent = new FilmCardView(film);
     this._popupComponent = new PopupView();
 
 
     // обработчик открытия попапа на постер
-    this._filmCardComponent.setPosterClickHandler(() => {
+    this._cardComponent.setPosterClickHandler(() => {
       if (this._isRequestSent !== true) {
         this._renderPopup();
       }
     });
 
     // обработчик открытия попапа на title
-    this._filmCardComponent.setTitleClickHandler(() => {
+    this._cardComponent.setTitleClickHandler(() => {
       if (this._isRequestSent !== true) {
         this._renderPopup();
       }
     });
 
     // обработчик открытия попапа на кол-во комментариев в карточке
-    this._filmCardComponent.setCommentAmountClickHandler(() => {
+    this._cardComponent.setCommentAmountClickHandler(() => {
       if (this._isRequestSent !== true) {
         this._renderPopup();
       }
     });
 
-    this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmCardComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
-    this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._cardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._cardComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
+    this._cardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     // если карточка фильма рисуется первый раз, просто отрисуй
-    if (prevFilmCardComponent === null || prevPopupComponent === null) {
+    if (prevCardComponent === null || prevPopupComponent === null) {
       this._renderCard(this._film);
 
       if (this._film.isPopupOpen) {
@@ -88,8 +88,8 @@ export default class FilmCard {
     }
 
     // иначе, замени предыдущую карточку на обновленную
-    if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
-      replace(this._filmCardComponent, prevFilmCardComponent);
+    if (this._container.getElement().contains(prevCardComponent.getElement())) {
+      replace(this._cardComponent, prevCardComponent);
     }
 
     if (body.contains(prevPopupComponent.getElement())) {
@@ -97,12 +97,12 @@ export default class FilmCard {
     }
 
     remove(prevPopupComponent);
-    remove(prevFilmCardComponent);
+    remove(prevCardComponent);
   }
 
   // метод для удаления карточки
-  destroyFilmCard() {
-    remove(this._filmCardComponent);
+  destroy() {
+    remove(this._cardComponent);
     this.destroyPopup();
   }
 
@@ -131,7 +131,10 @@ export default class FilmCard {
 
     switch (state) {
       case State.UPDATING:
-        this._filmControlComponent.disableButtons();
+        this._cardComponent.disableButtons();
+        if (body.contains(this._popupComponent.getElement())) {
+          this._filmControlComponent.disableButtons();
+        }
         break;
 
       case State.SAVING:
@@ -151,26 +154,30 @@ export default class FilmCard {
     }
   }
 
+  setButtonsAborting() {
+    this._cardComponent.enableButtons();
+    this._filmControlComponent.enableButtons();
+  }
+
   setAborting() {
     this._filmCommentsComponent.shake();
     this._filmCommentsComponent.enableForm();
-    this._filmControlComponent.enableButtons();
   }
 
   // метод для рендера карточки фильма
   _renderCard() {
-    render(this._filmCardContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
+    render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
   }
 
   _getComments() {
     this._isRequestSent = true;
     this._api.getComments(this._film)
       .then((comments) => {
-        this._commentsModel.setComments(UpdateType.INIT_POPUP, comments, this._film);
+        this._commentsModel.set(UpdateType.INIT_POPUP, comments, this._film);
         this._isRequestSent = false;
       })
       .catch(() => {
-        this._commentsModel.setComments(UpdateType.INIT_POPUP, []);
+        this._commentsModel.set(UpdateType.INIT_POPUP, []);
         this._isRequestSent = false;
       });
   }
@@ -216,7 +223,7 @@ export default class FilmCard {
 
   // метод для рендеринга комментариев
   _renderFilmComments() {
-    this._comments = this._commentsModel.getComments();
+    this._comments = this._commentsModel.get();
 
     this._filmCommentsComponent = new FilmCommentsView(this._comments, this._film);
     this._commentsContainer = this._filmCommentsComponent.getElement().querySelector(`.film-details__comments-list`);
