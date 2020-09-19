@@ -111,10 +111,13 @@ export default class MovieList {
   _handleViewAction(actionType, updateType, update, film) {
     if (update.isPopupOpen) {
       this._filmsModel.setOpenedPopup(update.id);
+    } else if (film.isPopupOpen) {
+      this._filmsModel.setOpenedPopup(film.id);
     }
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        // this._filmPresenter[update.id].setViewState(State.UPDATING);
+        this._filmPresenter[update.id].setViewState(State.UPDATING);
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilm(updateType, response);
         });
@@ -125,6 +128,10 @@ export default class MovieList {
         this._api.addComment(update, film)
           .then((responce) => {
             this._commentsModel.addComment(updateType, responce, film);
+            this._api.getFilms()
+            .then((films) => {
+              this._filmsModel.setFilms(UpdateType.MINOR, films);
+            });
           })
           .catch(() => {
             this._filmPresenter[film.id].setAborting();
@@ -139,6 +146,10 @@ export default class MovieList {
         // Поэтому в модель мы всё также передаем update
         this._api.deleteComment(update, film)
           .then(() => {
+            this._api.getFilms()
+              .then((films) => {
+                this._filmsModel.setFilms(UpdateType.MINOR, films);
+              });
             this._commentsModel.deleteComment(updateType, update, film);
           })
           .catch(() => {
@@ -153,7 +164,6 @@ export default class MovieList {
   // - обновить весь верхний раздел (например, при переключении фильтра)
   _handleModelEvent(updateType, data) {
     switch (updateType) {
-
       case UpdateType.PATCH:
         // обновляет карточку
         this._filmPresenter[data.id].init(data);
