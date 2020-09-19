@@ -56,11 +56,10 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCard extends Abstract {
-  constructor(film, comments) {
+  constructor(film) {
     super();
 
     this._data = film;
-    this._comments = comments;
 
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
@@ -72,7 +71,7 @@ export default class FilmCard extends Abstract {
   }
 
   _getTemplate() {
-    return createFilmCardTemplate(this._data, this._comments);
+    return createFilmCardTemplate(this._data);
   }
 
   _posterClickHandler(evt) {
