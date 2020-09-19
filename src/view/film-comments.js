@@ -62,9 +62,9 @@ const createFilmCommentsTemplate = (comments) => {
 };
 
 export default class FilmComments extends AbstractView {
-  constructor(filmComments, film) {
+  constructor(comments, film) {
     super();
-    this._filmComments = filmComments;
+    this._comments = comments;
     this._film = film;
 
     this._form = this
@@ -109,7 +109,7 @@ export default class FilmComments extends AbstractView {
   }
 
   _getTemplate() {
-    return createFilmCommentsTemplate(this._filmComments);
+    return createFilmCommentsTemplate(this._comments);
   }
 
   _emojiClickHandler(evt) {
