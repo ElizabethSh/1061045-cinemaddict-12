@@ -5,7 +5,7 @@ import FilmControlView from "../view/film-control.js";
 import FilmCommentsView from "../view/film-comments.js";
 import CommentView from "../view/comment.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {Mode, UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const body = document.querySelector(`body`);
 
@@ -24,7 +24,6 @@ export default class FilmCard {
     this._commentsModel = commentsModel;
     this._api = api;
 
-    this._mode = Mode.DEFAULT;
     this._commentView = {}; // observer
 
     this._filmCardComponent = null;
@@ -81,12 +80,10 @@ export default class FilmCard {
     }
 
     // иначе, замени предыдущую карточку на обновленную
-    // if (this._mode === Mode.DEFAULT) {
     if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
-    // if (this._mode === Mode.POPUP) {
     if (body.contains(prevPopupComponent.getElement())) {
       this._renderPopup();
     }
@@ -105,15 +102,13 @@ export default class FilmCard {
   destroyPopup() {
     remove(this._popupComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    this._mode = Mode.DEFAULT;
     this._film.isPopupOpen = false;
     this._commentView = {};
   }
 
   // метод для удаления всех попапов и переключения режима страницы
   resetView() {
-    // if (this._film.isPopupOpen) {
-    if (this._mode !== Mode.DEFAULT) {
+    if (this._film.isPopupOpen) {
       this.destroyPopup();
     }
   }
@@ -172,9 +167,6 @@ export default class FilmCard {
   // метод для рендера попапа
   _renderPopup() {
     this._getComments();
-
-    // this._mode = Mode.POPUP;
-    // this._film.isPopupOpen = true;
   }
 
   renderPopupDetails() {
@@ -184,7 +176,6 @@ export default class FilmCard {
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._popupComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
-    this._mode = Mode.POPUP;
 
     this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
 
@@ -307,7 +298,7 @@ export default class FilmCard {
   _handleDeleteClick(comment) {
     this._changeData(
         UserAction.DELETE_COMMENT,
-        UpdateType.PATCH,
+        null,
         comment,
         this._film
     );
@@ -317,7 +308,7 @@ export default class FilmCard {
   _handleFormSubmit(comment) {
     this._changeData(
         UserAction.ADD_COMMENT,
-        UpdateType.PATCH,
+        null,
         comment,
         this._film
     );
