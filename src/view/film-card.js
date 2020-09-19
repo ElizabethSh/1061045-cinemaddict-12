@@ -60,6 +60,8 @@ export default class FilmCard extends Abstract {
     super();
 
     this._data = film;
+    this._buttons = this.getElement()
+                        .querySelectorAll(`.film-card__controls-item`);
 
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
@@ -68,6 +70,18 @@ export default class FilmCard extends Abstract {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._alreadyWatchedClickHandler = this._alreadyWatchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+  }
+
+  disableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = true;
+    });
+  }
+
+  enableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = false;
+    });
   }
 
   _getTemplate() {
