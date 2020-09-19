@@ -3,11 +3,11 @@ export default class Observer {
     this._observers = [];
   }
 
-  addObserver(observer) {
+  add(observer) {
     this._observers.push(observer);
   }
 
-  removeObserver(observer) {
+  remove(observer) {
     this._observers = this._observers.filter((existedObserver) => existedObserver !== observer);
   }
 
