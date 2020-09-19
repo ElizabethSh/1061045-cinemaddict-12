@@ -6,12 +6,12 @@ export default class Comments extends Observer {
     this._comments = [];
   }
 
-  setComments(updateType, comments, film) {
+  set(updateType, comments, film) {
     this._comments = comments.slice();
     this._notify(updateType, film);
   }
 
-  getComments() {
+  get() {
     return this._comments;
   }
 
