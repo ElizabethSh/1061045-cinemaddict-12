@@ -6,7 +6,7 @@ import {capitalizeFirstLetter} from "../utils/common.js";
 
 export default class Filter {
   constructor(filterContainer, filterModel, filmsModel, selectMenuItem) {
-    this._filterContainer = filterContainer;
+    this._container = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
     this._selectMenuItem = selectMenuItem;
@@ -15,12 +15,12 @@ export default class Filter {
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._filmsModel.add(this._handleModelEvent);
+    this._filterModel.add(this._handleModelEvent);
   }
 
   init() {
-    this._currentFilter = this._filterModel.getFilter();
+    this._currentFilter = this._filterModel.get();
 
     const filters = this._getFilters();
     const prevMainNavigationComponent = this._mainNavigationComponent;
@@ -30,7 +30,7 @@ export default class Filter {
     this._mainNavigationComponent.setStatsClickHandler(this._selectMenuItem);
 
     if (prevMainNavigationComponent === null) {
-      render(this._filterContainer, this._mainNavigationComponent, RenderPosition.BEFOREEND);
+      render(this._container, this._mainNavigationComponent, RenderPosition.BEFOREEND);
       return;
     }
     replace(this._mainNavigationComponent, prevMainNavigationComponent);
@@ -42,7 +42,7 @@ export default class Filter {
   }
 
   _getFilters() {
-    const films = this._filmsModel.getFilms();
+    const films = this._filmsModel.get();
 
     return [
       {
