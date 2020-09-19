@@ -24,6 +24,8 @@ export default class FilmCard {
     this._commentsModel = commentsModel;
     this._api = api;
 
+    this._isRequestSent = null;
+
     this._commentView = {}; // observer
 
     this._filmCardComponent = null;
@@ -52,17 +54,23 @@ export default class FilmCard {
 
     // обработчик открытия попапа на постер
     this._filmCardComponent.setPosterClickHandler(() => {
-      this._renderPopup();
+      if (this._isRequestSent !== true) {
+        this._renderPopup();
+      }
     });
 
     // обработчик открытия попапа на title
     this._filmCardComponent.setTitleClickHandler(() => {
-      this._renderPopup();
+      if (this._isRequestSent !== true) {
+        this._renderPopup();
+      }
     });
 
     // обработчик открытия попапа на кол-во комментариев в карточке
     this._filmCardComponent.setCommentAmountClickHandler(() => {
-      this._renderPopup();
+      if (this._isRequestSent !== true) {
+        this._renderPopup();
+      }
     });
 
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -155,12 +163,15 @@ export default class FilmCard {
   }
 
   _getComments() {
+    this._isRequestSent = true;
     this._api.getComments(this._film)
       .then((comments) => {
         this._commentsModel.setComments(UpdateType.INIT_POPUP, comments, this._film);
+        this._isRequestSent = false;
       })
       .catch(() => {
         this._commentsModel.setComments(UpdateType.INIT_POPUP, []);
+        this._isRequestSent = false;
       });
   }
 
