@@ -7,12 +7,12 @@ export default class Films extends Observer {
     this._openedPopup = null;
   }
 
-  setFilms(updateType, films) {
+  set(updateType, films) {
     this._films = films.slice();
     this._notify(updateType);
   }
 
-  getFilms() {
+  get() {
     return this._films;
   }
 
