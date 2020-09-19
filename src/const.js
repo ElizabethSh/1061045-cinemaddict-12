@@ -6,11 +6,6 @@ export const SortType = {
   RATING: `rating`
 };
 
-export const Mode = {
-  DEFAULT: `DEFAULT`,
-  POPUP: `POPUP`
-};
-
 export const UserAction = {
   ADD_COMMENT: `ADD_COMMENT`,
   DELETE_COMMENT: `DELETE_COMMENT`,
