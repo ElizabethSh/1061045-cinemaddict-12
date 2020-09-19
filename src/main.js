@@ -1,4 +1,3 @@
-// import ProfileView from "./view/profile.js";
 import FooterStatisticView from "./view/footer-statistic.js";
 import StatisticsView from "./view/stats.js";
 import MovieListPresenter from "./presenter/movie-list.js";
@@ -13,7 +12,6 @@ import FilterPresenter from "./presenter/filter.js";
 const AUTORIZATION = `Basic 4h7fbdskj854j`;
 const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 
-// const siteHeader = document.querySelector(`.header`);
 const siteMain = document.querySelector(`.main`);
 const siteFooter = document.querySelector(`.footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
@@ -35,8 +33,9 @@ const handleSiteMenuClick = (menuType, filterType) => {
     case MenuItem.STATISTICS:
       // Скрыть доску
       movieListPresenter.destroy();
+
       // Показать статистику
-      statisticsComponent = new StatisticsView(filmsModel.getFilms(), StatsPeriod.ALL_TIME);
+      statisticsComponent = new StatisticsView(filmsModel.get(), StatsPeriod.ALL_TIME);
       render(siteMain, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
       break;
 
@@ -45,9 +44,9 @@ const handleSiteMenuClick = (menuType, filterType) => {
       // Скрыть статистику
       remove(statisticsComponent);
       movieListPresenter.destroy();
-      // Показать доску c выбранным фильтром
 
-      filterModel.setFilter(UpdateType.MAJOR, filterType);
+      // Показать доску c выбранным фильтром
+      filterModel.set(UpdateType.MAJOR, filterType);
       movieListPresenter.init();
   }
 };
@@ -60,15 +59,13 @@ movieListPresenter.init();
 
 api.getFilms()
   .then((films) => {
-    filmsModel.setFilms(UpdateType.INIT, films);
+    filmsModel.set(UpdateType.INIT, films);
 
     movieListPresenter.renderProfile();
-    // render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
-    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
+    render(footerStatistic, new FooterStatisticView(filmsModel.get()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
-    filmsModel.setFilms(UpdateType.INIT, []);
+    filmsModel.set(UpdateType.INIT, []);
     movieListPresenter.renderProfile();
-    // render(siteHeader, new ProfileView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
-    render(footerStatistic, new FooterStatisticView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
+    render(footerStatistic, new FooterStatisticView(filmsModel.get()), RenderPosition.BEFOREEND);
   });
