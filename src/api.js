@@ -100,7 +100,7 @@ export default class Api {
   // метод для проверки статуса ответа сервера
   static checkStatus(response) {
 
-    // если код статуса меньше 200 и больше 299, то
+    // если код статуса меньше 200 или больше 299, то
     // бросить ошибку
     if (
       response.status < SuccessHTTPStatusRange.MIN ||
