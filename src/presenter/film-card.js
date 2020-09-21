@@ -5,16 +5,9 @@ import FilmControlView from "../view/film-control.js";
 import FilmCommentsView from "../view/film-comments.js";
 import CommentView from "../view/comment.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, State} from "../const.js";
 
 const body = document.querySelector(`body`);
-
-export const State = {
-  UPDATING: `UPDATING`,
-  SAVING: `SAVING`,
-  DELETING: `DELETING`,
-  ABORTING: `ABORTING`
-};
 
 export default class FilmCard {
   constructor(filmContainer, changeData, changeMode, commentsModel, api) {
@@ -24,12 +17,11 @@ export default class FilmCard {
     this._commentsModel = commentsModel;
     this._api = api;
 
-    this._isRequestSent = null;
-
     this._commentView = {}; // observer
 
     this._cardComponent = null;
     this._popupComponent = null;
+    this._isRequestSent = null;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleAlreadyWatchedClick = this._handleAlreadyWatchedClick.bind(this);
@@ -38,7 +30,6 @@ export default class FilmCard {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
-
     this._handleCommentViewAction = this._handleCommentViewAction.bind(this);
   }
 
@@ -51,24 +42,23 @@ export default class FilmCard {
     this._cardComponent = new FilmCardView(film);
     this._popupComponent = new PopupView();
 
-
     // обработчик открытия попапа на постер
     this._cardComponent.setPosterClickHandler(() => {
-      if (this._isRequestSent !== true) {
+      if (!this._isRequestSent) {
         this._renderPopup();
       }
     });
 
     // обработчик открытия попапа на title
     this._cardComponent.setTitleClickHandler(() => {
-      if (this._isRequestSent !== true) {
+      if (!this._isRequestSent) {
         this._renderPopup();
       }
     });
 
     // обработчик открытия попапа на кол-во комментариев в карточке
     this._cardComponent.setCommentAmountClickHandler(() => {
-      if (this._isRequestSent !== true) {
+      if (!this._isRequestSent) {
         this._renderPopup();
       }
     });
@@ -164,6 +154,24 @@ export default class FilmCard {
     this._filmCommentsComponent.enableForm();
   }
 
+  renderPopupDetails() {
+    this._changeMode();
+    // рендер попапа без содержимого
+    render(body, this._popupComponent, RenderPosition.BEFOREEND);
+
+    document.addEventListener(`keydown`, this._escKeyDownHandler);
+    this._popupComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
+
+    this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
+
+    // рендер содержимого попапа
+    this._renderFilmInfo(this._film);
+    this._renderFilmControl(this._film);
+    this._renderFilmComments();
+
+    this._film.isPopupOpen = true;
+  }
+
   // метод для рендера карточки фильма
   _renderCard() {
     render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -185,24 +193,6 @@ export default class FilmCard {
   // метод для рендера попапа
   _renderPopup() {
     this._getComments();
-  }
-
-  renderPopupDetails() {
-    this._changeMode();
-    // рендер попапа без содержимого
-    render(body, this._popupComponent, RenderPosition.BEFOREEND);
-
-    document.addEventListener(`keydown`, this._escKeyDownHandler);
-    this._popupComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
-
-    this._filmInfoContainer = this._popupComponent.getElement().querySelector(`.form-details__top-container`);
-
-    // рендер содержимого попапа
-    this._renderFilmInfo(this._film);
-    this._renderFilmControl(this._film);
-    this._renderFilmComments();
-
-    this._film.isPopupOpen = true;
   }
 
   // метод для рендеринга информации о фильме
@@ -240,7 +230,7 @@ export default class FilmCard {
   // метод для рендера одного комментария
   _renderComment(comment) {
     this._commentComponent = new CommentView(comment);
-    this._commentComponent.setCommentDeleteClickHandler(this._handleDeleteClick);
+    this._commentComponent.setDeleteButtonClickHandler(this._handleDeleteClick);
     render(this._commentsContainer, this._commentComponent, RenderPosition.BEFOREEND);
 
     this._commentView[comment.id] = this._commentComponent;
