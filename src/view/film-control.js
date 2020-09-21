@@ -65,7 +65,6 @@ export default class FilmControl extends AbstractView {
     this.getElement()
         .querySelector(`#watchlist`)
         .addEventListener(`change`, this._watchlistClickHandler);
-
   }
 
   setAlreadyWatchedChangeHandler(callback) {
@@ -73,7 +72,6 @@ export default class FilmControl extends AbstractView {
     this.getElement()
         .querySelector(`#watched`)
         .addEventListener(`change`, this._alreadyWatchedClickHandler);
-
   }
 
   setFavoriteChangeHandler(callback) {
