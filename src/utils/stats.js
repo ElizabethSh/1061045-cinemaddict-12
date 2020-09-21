@@ -56,10 +56,10 @@ const countFilmsByGenre = (films, selectedGenre) => {
 };
 
 const countGenres = (films) => {
-  const allGenres = films.reduce((acc, film) => [...acc, ...film.genres], []);
+  const allGenres = films.reduce((accumulator, film) => [...accumulator, ...film.genres], []);
   const unicGenres = [...new Set(allGenres)];
-  const countedGenres = unicGenres.reduce((acc, genre) => {
-    return Object.assign(acc, {[genre]: countFilmsByGenre(films, genre)});
+  const countedGenres = unicGenres.reduce((accumulator, genre) => {
+    return Object.assign(accumulator, {[genre]: countFilmsByGenre(films, genre)});
   }, {});
 
   return countedGenres;
@@ -82,5 +82,5 @@ export const getTopGenre = (films) => {
 };
 
 export const getTotalDuration = (films) => {
-  return films.reduce((acc, film) => acc + film.runtime, 0);
+  return films.reduce((accumulator, film) => accumulator + film.runtime, 0);
 };
