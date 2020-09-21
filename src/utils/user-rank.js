@@ -1,14 +1,21 @@
+import {UserRank, UserRankRate} from "../const.js";
+
 export const getRank = (films) => {
-  if (films.length > 0 && films.length <= 10) {
-    return `novice`;
+  if (films.length > 0 && films.length <= UserRankRate.NOVICE) {
+    return UserRank.NOVICE;
   }
 
-  if (films.length > 10 && films.length <= 20) {
-    return `fan`;
+  if (films.length > UserRankRate.NOVICE && films.length <= UserRankRate.FAN) {
+    return UserRank.FAN;
   }
 
-  if (films.length > 20) {
-    return `movie buff`;
+  if (films.length > UserRankRate.FAN) {
+    return UserRank.MOVIE_BUFF;
   }
   return ` `;
+};
+
+export const formatUserRank = (string) => {
+  const strings = string.split(` `);
+  return strings.map((it) => it[0].toUpperCase() + it.slice(1)).join(`-`);
 };
