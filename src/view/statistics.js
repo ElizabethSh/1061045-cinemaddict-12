@@ -2,7 +2,7 @@ import SmartView from "./smart.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {StatsPeriod} from "../const.js";
-import {getRank} from "../utils/user-rank.js";
+import {getRank, formatUserRank} from "../utils/user-rank.js";
 import {
   convertTextToKebabCase,
   convertToTextFromKebabCase
@@ -12,7 +12,7 @@ import {
   getSortedGenres,
   getHoursAndMinutes,
   getTopGenre,
-  getTotalDuration
+  getTotalDuration,
 } from "../utils/stats.js";
 
 const BAR_HEIGHT = 50;
@@ -109,7 +109,7 @@ const createStatisticsTemplate = (data) => {
   const totalDuration = getHoursAndMinutes(getTotalDuration(watchedFilmsInDateRange));
   const {hours, minutes} = totalDuration;
   const topGenre = getTopGenre(watchedFilmsInDateRange);
-  const rank = getRank(watchedFilms);
+  const rank = formatUserRank(getRank(watchedFilms));
 
   const periodsMenuTemplate = createPeriodMenuTemplate(period);
 
@@ -165,17 +165,17 @@ export default class Statistics extends SmartView {
     this._filmsByGenresChart = null;
   }
 
-  restoreHandlers() {
-    this._setCharts();
-    this._setPeriod();
-  }
-
   removeElement() {
     super.removeElement();
 
     if (this._filmsByGenresChart !== null) {
       this._filmsByGenresChart = null;
     }
+  }
+
+  restoreHandlers() {
+    this._setCharts();
+    this._setPeriod();
   }
 
   _getTemplate() {
