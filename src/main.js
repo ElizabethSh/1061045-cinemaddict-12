@@ -1,5 +1,5 @@
 import FooterStatisticView from "./view/footer-statistic.js";
-import StatisticsView from "./view/stats.js";
+import StatisticsView from "./view/statistics.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilmsModel from "./model/films.js";
 import CommentsModel from "./model/comments.js";
@@ -24,10 +24,9 @@ const filterModel = new FilterModel();
 
 const movieListPresenter = new MovieListPresenter(siteMain, filmsModel, commentsModel, filterModel, api);
 
-// MAIN
+// MAIN-NAVIGATION
 let statisticsComponent = null;
 
-// MAIN-NAVIGATION
 const handleSiteMenuClick = (menuType, filterType) => {
   switch (menuType) {
     case MenuItem.STATISTICS:
