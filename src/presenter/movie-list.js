@@ -7,11 +7,9 @@ import ShowMoreButtonView from "../view/show-more-button.js";
 import LoadingView from "../view/loading.js";
 import FilmCardPresenter from "../presenter/film-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {SortType, UserAction, UpdateType} from "../const.js";
+import {SortType, UserAction, UpdateType, State} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 import {filter} from "../utils/filter.js";
-import {State} from "./film-card.js";
-
 import ProfileView from "../view/profile.js";
 
 const MAX_FILMS_PER_STEP = 5;
@@ -274,6 +272,38 @@ export default class MovieList {
     render(this._allFilmSectionComponent, this._showMoreButtonComponent, RenderPosition.BEFOREEND);
   }
 
+  _clear({resetRenderedFilmCount = false, resetSortType = false} = {}) {
+    // получаем кол-во задач, доступных на момент очистки movieList
+    const filmCount = this._getFilms().length;
+
+    // вызываем у каждого filmPresenter метод destroy
+    Object.values(this._filmPresenter)
+          .forEach((presenter) => presenter.destroy());
+
+    this._filmPresenter = {};
+
+    remove(this._noFilmComponent);
+    remove(this._showMoreButtonComponent);
+    remove(this._loadingComponent);
+
+    // условие, сброшено ли кол-во показанных фильмов
+    if (resetRenderedFilmCount) {
+      // если да, делаем его снова равным константе
+      this._renderedFilmAmount = MAX_FILMS_PER_STEP;
+    } else {
+      // если нет, нужно оставить то кол-во фильмов, кот. было
+      // показано, за исключением случаев переноса фильмов
+      // при сбросе признака-фильтра, поэтому число показанных фильмов
+      // нужно уменьшать на кол-во перенесенных фильмов
+      this._renderedFilmAmount = Math.min(filmCount, this._renderedFilmAmount);
+    }
+
+    if (resetSortType) {
+      this._curentSortType = SortType.DEFAULT;
+      this._sortComponent.setActiveButton(this._curentSortType);
+    }
+  }
+
   _handleModeChange() {
     this._filmsModel.setOpenedPopup(null);
     Object.values(this._filmPresenter)
@@ -309,38 +339,4 @@ export default class MovieList {
     // - Рендерим список заново
     this._renderAllFilmsList();
   }
-
-  _clear({resetRenderedFilmCount = false, resetSortType = false} = {}) {
-    // получаем кол-во задач, доступных на момент очистки movieList
-    const filmCount = this._getFilms().length;
-
-    // вызываем у каждого filmPresenter метод destroy
-    Object.values(this._filmPresenter)
-          .forEach((presenter) => presenter.destroy());
-
-    this._filmPresenter = {};
-
-    remove(this._noFilmComponent);
-    remove(this._showMoreButtonComponent);
-    remove(this._loadingComponent);
-
-    // условие, сброшено ли кол-во показанных фильмов
-    if (resetRenderedFilmCount) {
-      // если да, делаем его снова равным константе
-      this._renderedFilmAmount = MAX_FILMS_PER_STEP;
-    } else {
-      // если нет, нужно оставить то кол-во фильмов, кот. было
-      // показано, за исключением случаев переноса фильмов
-      // при сбросе признака-фильтра, поэтому число показанных фильмов
-      // нужно уменьшать на кол-во перенесенных фильмов
-      this._renderedFilmAmount = Math.min(filmCount, this._renderedFilmAmount);
-    }
-
-    if (resetSortType) {
-      this._curentSortType = SortType.DEFAULT;
-      this._sortComponent.setActiveButton(this._curentSortType);
-    }
-  }
-
-
 }
