@@ -47,7 +47,7 @@ const createFilmCommentsTemplate = (comments) => {
               class="film-details__comment-input"
               placeholder="Select reaction below and write comment here"
               name="comment"
-              >
+              required>
             </textarea>
           </label>
 
@@ -87,7 +87,20 @@ export default class FilmComments extends AbstractView {
         .addEventListener(`input`, this._commentMessageInputHandler);
   }
 
-  // метод для обновления данных
+  shake() {
+    this
+      .getElement()
+      .querySelector(`.film-details__comment-label`)
+      .style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this
+        .getElement()
+        .querySelector(`.film-details__comment-label`)
+        .style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   updateData(update) {
     if (!update) {
       return;
@@ -149,25 +162,10 @@ export default class FilmComments extends AbstractView {
         .addEventListener(`keydown`, this._formSubmitClickHandler);
   }
 
-  shake() {
-    this
-      .getElement()
-      .querySelector(`.film-details__comment-label`)
-      .style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-
-    setTimeout(() => {
-      this
-        .getElement()
-        .querySelector(`.film-details__comment-label`)
-        .style.animation = ``;
-    }, SHAKE_ANIMATION_TIMEOUT);
-  }
-
   static parseCommentToData(newComment) {
     return Object.assign(
         {},
         newComment
     );
   }
-
 }
