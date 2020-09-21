@@ -42,13 +42,16 @@ export default class MainNavigation extends AbstractView {
   }
 
   _filterTypeClickHandler(evt) {
-    if (evt.target.tagName !== `A`) {
+    if (evt.target.tagName !== `A` && evt.target.tagName !== `SPAN`) {
       return;
     }
+    const target = (evt.target.tagName === `SPAN`) ?
+      evt.target.parentNode :
+      evt.target;
 
     evt.preventDefault();
     const filterTypes = Object.values(FilterType);
-    const filterType = evt.target.dataset.filterType;
+    const filterType = target.dataset.filterType;
     const isFilter = filterTypes.includes(filterType);
     const menuCategory = isFilter ? MenuItem.FILTERS : filterType;
 
@@ -58,22 +61,6 @@ export default class MainNavigation extends AbstractView {
   _statsClickHandler(evt) {
     evt.preventDefault();
     this._callback.statsClick(MenuItem.STATISTICS);
-
-  }
-
-  setFilterTypeClickHandler(callback) {
-    this._callback.filterTypeClick = callback;
-    this.getElement()
-        .querySelector(`.main-navigation__items`)
-        .addEventListener(`click`, this._filterTypeClickHandler);
-
-  }
-
-  setStatsClickHandler(callback) {
-    this._callback.statsClick = callback;
-    this.getElement()
-        .querySelector(`.main-navigation__additional`)
-        .addEventListener(`click`, this._statsClickHandler);
   }
 
   _buttonClickHandler(evt) {
@@ -85,5 +72,19 @@ export default class MainNavigation extends AbstractView {
 
     buttons.forEach((it) => it.classList.remove(`main-navigation__item--active`));
     evt.target.classList.add(`main-navigation__item--active`);
+  }
+
+  setFilterTypeClickHandler(callback) {
+    this._callback.filterTypeClick = callback;
+    this.getElement()
+        .querySelector(`.main-navigation__items`)
+        .addEventListener(`click`, this._filterTypeClickHandler);
+  }
+
+  setStatsClickHandler(callback) {
+    this._callback.statsClick = callback;
+    this.getElement()
+        .querySelector(`.main-navigation__additional`)
+        .addEventListener(`click`, this._statsClickHandler);
   }
 }
