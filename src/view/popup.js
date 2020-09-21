@@ -18,18 +18,18 @@ export default class Popup extends SmartView {
   constructor() {
     super();
 
-    this._clickCloseButtonHandler = this._clickCloseButtonHandler.bind(this);
-  }
-
-  _getTemplate() {
-    return createPopupTemplate();
+    this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
   }
 
   restoreHandlers() {
     this.setCloseButtonClickHandler(this._callback.closeButtonClick);
   }
 
-  _clickCloseButtonHandler(evt) {
+  _getTemplate() {
+    return createPopupTemplate();
+  }
+
+  _closeButtonClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeButtonClick();
   }
@@ -38,7 +38,6 @@ export default class Popup extends SmartView {
     this._callback.closeButtonClick = callback;
     this.getElement()
         .querySelector(`.film-details__close-btn`)
-        .addEventListener(`click`, this._clickCloseButtonHandler);
+        .addEventListener(`click`, this._closeButtonClickHandler);
   }
-
 }
