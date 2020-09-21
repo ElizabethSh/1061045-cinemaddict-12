@@ -1,9 +1,9 @@
 import AbstractView from "./abstract.js";
-import {getRank} from "../utils/user-rank.js";
+import {getRank, formatUserRank} from "../utils/user-rank.js";
 
 const createProfileTemplate = (films) => {
   const watchedFilms = films.filter((film) => film.isHistory);
-  const rank = getRank(watchedFilms);
+  const rank = formatUserRank(getRank(watchedFilms));
   return (
     `<section class="header__profile profile">
       <p class="profile__rating">${rank}</p>
@@ -17,6 +17,7 @@ export default class Profile extends AbstractView {
     super();
     this._films = films;
   }
+
   _getTemplate() {
     return createProfileTemplate(this._films);
   }
