@@ -16,16 +16,31 @@ const createFilmInfoControlsTemplate = (film) => {
   );
 };
 
-export default class FilmInfoControl extends AbstractView {
+export default class FilmControl extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
 
+    this._buttons = this.getElement()
+                        .querySelectorAll(`.film-details__control-input`);
+
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._alreadyWatchedClickHandler = this._alreadyWatchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-
   }
+
+  disableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = true;
+    });
+  }
+
+  enableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+
   _getTemplate() {
     return createFilmInfoControlsTemplate(this._film);
   }
@@ -50,7 +65,6 @@ export default class FilmInfoControl extends AbstractView {
     this.getElement()
         .querySelector(`#watchlist`)
         .addEventListener(`change`, this._watchlistClickHandler);
-
   }
 
   setAlreadyWatchedChangeHandler(callback) {
@@ -58,7 +72,6 @@ export default class FilmInfoControl extends AbstractView {
     this.getElement()
         .querySelector(`#watched`)
         .addEventListener(`change`, this._alreadyWatchedClickHandler);
-
   }
 
   setFavoriteChangeHandler(callback) {

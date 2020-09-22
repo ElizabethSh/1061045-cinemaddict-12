@@ -6,7 +6,7 @@ const createNoTaskTemplate = () => {
     </section>`;
 };
 
-export default class NoTask extends AbstractView {
+export default class NoFilm extends AbstractView {
   _getTemplate() {
     return createNoTaskTemplate();
   }

@@ -4,15 +4,24 @@ export default class Films extends Observer {
   constructor() {
     super();
     this._films = [];
+    this._openedPopup = null;
   }
 
-  setFilms(updateType, films) {
+  set(updateType, films) {
     this._films = films.slice();
     this._notify(updateType);
   }
 
-  getFilms() {
+  get() {
     return this._films;
+  }
+
+  setOpenedPopup(filmId) {
+    this._openedPopup = filmId;
+  }
+
+  getOpenedPopup() {
+    return this._openedPopup;
   }
 
   updateFilm(updateType, update) {
@@ -56,7 +65,7 @@ export default class Films extends Observer {
         }
     );
 
-    // Ненужные ключи мы удаляем
+    // Ненужные ключи удаляем
     delete adaptedFilm.film_info.title;
     delete adaptedFilm.film_info.director;
     delete adaptedFilm.film_info.poster;
@@ -129,7 +138,7 @@ export default class Films extends Observer {
         }
     );
 
-    // Ненужные ключи мы удаляем
+    // Ненужные ключи удаляем
     delete adaptedFilm.title;
     delete adaptedFilm.poster;
     delete adaptedFilm.genres;
@@ -147,5 +156,4 @@ export default class Films extends Observer {
 
     return adaptedFilm;
   }
-
 }

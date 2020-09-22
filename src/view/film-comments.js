@@ -47,7 +47,7 @@ const createFilmCommentsTemplate = (comments) => {
               class="film-details__comment-input"
               placeholder="Select reaction below and write comment here"
               name="comment"
-              >
+              required>
             </textarea>
           </label>
 
@@ -62,10 +62,14 @@ const createFilmCommentsTemplate = (comments) => {
 };
 
 export default class FilmComments extends AbstractView {
-  constructor(filmComments, film) {
+  constructor(comments, film) {
     super();
-    this._filmComments = filmComments;
+    this._comments = comments;
     this._film = film;
+
+    this._form = this
+      .getElement()
+      .querySelector(`.film-details__comment-input`);
 
     this._newComment = BLANK_COMMENT;
     this._data = this._newComment;
@@ -83,7 +87,20 @@ export default class FilmComments extends AbstractView {
         .addEventListener(`input`, this._commentMessageInputHandler);
   }
 
-  // метод для обновления данных
+  shake() {
+    this
+      .getElement()
+      .querySelector(`.film-details__comment-label`)
+      .style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this
+        .getElement()
+        .querySelector(`.film-details__comment-label`)
+        .style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   updateData(update) {
     if (!update) {
       return;
@@ -97,23 +114,15 @@ export default class FilmComments extends AbstractView {
   }
 
   disableForm() {
-    const form = this
-      .getElement()
-      .querySelector(`.film-details__comment-input`);
-
-    form.disabled = true;
+    this._form.disabled = true;
   }
 
   enableForm() {
-    const form = this
-      .getElement()
-      .querySelector(`.film-details__comment-input`);
-
-    form.disabled = false;
+    this._form.disabled = false;
   }
 
   _getTemplate() {
-    return createFilmCommentsTemplate(this._filmComments);
+    return createFilmCommentsTemplate(this._comments);
   }
 
   _emojiClickHandler(evt) {
@@ -153,25 +162,10 @@ export default class FilmComments extends AbstractView {
         .addEventListener(`keydown`, this._formSubmitClickHandler);
   }
 
-  shake() {
-    this
-      .getElement()
-      .querySelector(`.film-details__comment-label`)
-      .style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-
-    setTimeout(() => {
-      this
-        .getElement()
-        .querySelector(`.film-details__comment-label`)
-        .style.animation = ``;
-    }, SHAKE_ANIMATION_TIMEOUT);
-  }
-
   static parseCommentToData(newComment) {
     return Object.assign(
         {},
         newComment
     );
   }
-
 }

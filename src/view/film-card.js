@@ -9,6 +9,7 @@ const createFilmCardTemplate = (film) => {
     rating,
     releaseDate,
     runtime,
+    genres,
     isWatchlist,
     isHistory,
     isFavorites
@@ -19,6 +20,7 @@ const createFilmCardTemplate = (film) => {
   const filmDuration = formatFilmDuration(runtime);
   const filmRating = rating.toFixed(1);
   const filmDescription = capitalizeFirstLetter(formatDescription(description));
+  const filmGenres = [...genres].join(` `);
 
   const watchlistClassName = isWatchlist
     ? `film-card__controls-item--add-to-watchlist film-card__controls-item--active`
@@ -39,7 +41,7 @@ const createFilmCardTemplate = (film) => {
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
         <span class="film-card__duration">${filmDuration}</span>
-        <span class="film-card__genre">Musical</span>
+        <span class="film-card__genre">${filmGenres}</span>
       </p>
       <img src="./${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${filmDescription}</p>
@@ -54,11 +56,12 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCard extends Abstract {
-  constructor(film, comments) {
+  constructor(film) {
     super();
 
     this._data = film;
-    this._comments = comments;
+    this._buttons = this.getElement()
+                        .querySelectorAll(`.film-card__controls-item`);
 
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
@@ -69,8 +72,20 @@ export default class FilmCard extends Abstract {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
+  disableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = true;
+    });
+  }
+
+  enableButtons() {
+    this._buttons.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+
   _getTemplate() {
-    return createFilmCardTemplate(this._data, this._comments);
+    return createFilmCardTemplate(this._data);
   }
 
   _posterClickHandler(evt) {

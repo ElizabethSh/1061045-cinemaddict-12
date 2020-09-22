@@ -6,17 +6,11 @@ export const SortType = {
   RATING: `rating`
 };
 
-export const Mode = {
-  DEFAULT: `DEFAULT`,
-  POPUP: `POPUP`
-};
-
 export const UserAction = {
   ADD_COMMENT: `ADD_COMMENT`,
   DELETE_COMMENT: `DELETE_COMMENT`,
   UPDATE_FILM: `UPDATE_FILM`
 };
-
 
 export const UpdateType = {
   PATCH: `PATCH`, // обновляет список комментариев
@@ -44,4 +38,22 @@ export const StatsPeriod = {
   WEEK: `Week`,
   MONTH: `Month`,
   YEAR: `Year`,
+};
+
+export const State = {
+  UPDATING: `UPDATING`,
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
+export const UserRank = {
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`
+};
+
+export const UserRankRate = {
+  NOVICE: 10,
+  FAN: 20,
 };

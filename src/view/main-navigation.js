@@ -4,7 +4,9 @@ import {FilterType, MenuItem} from "../const.js";
 const createFilterItemTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
 
-  return `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" data-filter-type = "${type}">${name}
+  return `<a href="#${name}"
+    class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}"
+    data-filter-type = "${type}">${name}
       ${type === FilterType.ALL ? `` : `<span class="main-navigation__item-count">${count}</span>`}
     </a>`;
 };
@@ -27,8 +29,12 @@ export default class MainNavigation extends AbstractView {
     this._filters = filters;
     this._currentFilter = currentFilterType;
 
+    this.getElement()
+        .addEventListener(`click`, this._buttonClickHandler);
+
     this._filterTypeClickHandler = this._filterTypeClickHandler.bind(this);
     this._statsClickHandler = this._statsClickHandler.bind(this);
+    this._buttonClickHandler = this._buttonClickHandler.bind(this);
   }
 
   _getTemplate() {
@@ -36,18 +42,36 @@ export default class MainNavigation extends AbstractView {
   }
 
   _filterTypeClickHandler(evt) {
-    if (evt.target.tagName !== `A`) {
+    if (evt.target.tagName !== `A` && evt.target.tagName !== `SPAN`) {
       return;
     }
+    const target = (evt.target.tagName === `SPAN`) ?
+      evt.target.parentNode :
+      evt.target;
 
     evt.preventDefault();
-    this._callback.filterTypeClick(evt.target.dataset.filterType);
+    const filterTypes = Object.values(FilterType);
+    const filterType = target.dataset.filterType;
+    const isFilter = filterTypes.includes(filterType);
+    const menuCategory = isFilter ? MenuItem.FILTERS : filterType;
+
+    this._callback.filterTypeClick(menuCategory, filterType);
   }
 
   _statsClickHandler(evt) {
     evt.preventDefault();
     this._callback.statsClick(MenuItem.STATISTICS);
+  }
 
+  _buttonClickHandler(evt) {
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+    evt.preventDefault();
+    const buttons = this.querySelectorAll(`a`);
+
+    buttons.forEach((it) => it.classList.remove(`main-navigation__item--active`));
+    evt.target.classList.add(`main-navigation__item--active`);
   }
 
   setFilterTypeClickHandler(callback) {
@@ -55,7 +79,6 @@ export default class MainNavigation extends AbstractView {
     this.getElement()
         .querySelector(`.main-navigation__items`)
         .addEventListener(`click`, this._filterTypeClickHandler);
-
   }
 
   setStatsClickHandler(callback) {

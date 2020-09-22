@@ -6,16 +6,15 @@ import AllFilmListView from "../view/all-film-list.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import LoadingView from "../view/loading.js";
 import FilmCardPresenter from "../presenter/film-card.js";
-import ExtraListPresenter from "../presenter/extra-list.js";
-import {render, RenderPosition, remove} from "../utils/render.js";
-import {SortType, UserAction, UpdateType/* , MenuItem*/} from "../const.js";
+import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {SortType, UserAction, UpdateType, State} from "../const.js";
 import {sortByDate, sortByRating} from "../utils/film.js";
 import {filter} from "../utils/filter.js";
-import {State} from "./film-card.js";
+import ProfileView from "../view/profile.js";
 
 const MAX_FILMS_PER_STEP = 5;
-const TOP_RATED_TITLE = `Top Rated`;
-const MOST_COMMENT_TITLE = `Most commented`;
+
+const siteHeader = document.querySelector(`.header`);
 
 export default class MovieList {
   constructor(container, filmsModel, commentsModel, filterModel, api) {
@@ -27,8 +26,6 @@ export default class MovieList {
 
     this._renderedFilmAmount = MAX_FILMS_PER_STEP;
 
-    this._topRatedListComponent = null;
-    this._mostCommentedListComponent = null;
     this._curentSortType = SortType.DEFAULT;
     this._filmPresenter = {}; // observer
     this._isLoading = true;
@@ -40,6 +37,7 @@ export default class MovieList {
     this._noFilmComponent = new NoFilmView();
     this._loadingComponent = new LoadingView();
     this._showMoreButtonComponent = null;
+    this._profileComponent = null;
 
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -49,30 +47,40 @@ export default class MovieList {
   }
 
   init() {
-    this._topRatedListComponent = new ExtraListPresenter(this._contentComponent, TOP_RATED_TITLE, this._commentsModel);
-    this._mostCommentedListComponent = new ExtraListPresenter(this._contentComponent, MOST_COMMENT_TITLE, this._commentsModel);
+    this._filmsModel.add(this._handleModelEvent);
+    this._filterModel.add(this._handleModelEvent);
+    this._commentsModel.add(this._handleModelEvent);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-    this._commentsModel.addObserver(this._handleModelEvent);
-
-    this._renderMovieList();
+    this._render();
   }
 
   destroy() {
-    this._clearMovieList({resetRenderedFilmCount: true, resetSortType: true});
+    this._clear({resetRenderedFilmCount: true, resetSortType: true});
 
     remove(this._sortComponent);
     remove(this._contentComponent);
 
-    this._filmsModel.removeObserver(this._handleModelEvent);
-    this._filterModel.removeObserver(this._handleModelEvent);
-    this._commentsModel.removeObserver(this._handleModelEvent);
+    this._filmsModel.remove(this._handleModelEvent);
+    this._filterModel.remove(this._handleModelEvent);
+    this._commentsModel.remove(this._handleModelEvent);
+  }
+
+  renderProfile() {
+    const prevProfileComponent = this._profileComponent;
+    this._profileComponent = new ProfileView(this._filmsModel.get());
+
+    if (prevProfileComponent === null) {
+      render(siteHeader, this._profileComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    replace(this._profileComponent, prevProfileComponent);
+    remove(prevProfileComponent);
   }
 
   _getFilms() {
-    const filterType = this._filterModel.getFilter();
-    const films = this._filmsModel.getFilms();
+    const filterType = this._filterModel.get();
+    const films = this._filmsModel.get();
     const filteredFilms = filter[filterType](films);
 
     switch (this._curentSortType) {
@@ -89,11 +97,23 @@ export default class MovieList {
   // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
   // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
   // update - обновленные данные
-  _handleViewAction(actionType, updateType, update, film) {
+  _handleViewAction(actionType, updateType, update, film = {}) {
+    if (update.isPopupOpen) {
+      this._filmsModel.setOpenedPopup(update.id);
+    } else if (film.isPopupOpen) {
+      this._filmsModel.setOpenedPopup(film.id);
+    } else {
+      this._filmsModel.setOpenedPopup(null);
+    }
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+        this._filmPresenter[update.id].setViewState(State.UPDATING);
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilm(updateType, response);
+        })
+        .catch(() => {
+          this._filmPresenter[update.id].setButtonsAborting();
         });
         break;
 
@@ -102,6 +122,10 @@ export default class MovieList {
         this._api.addComment(update, film)
           .then((responce) => {
             this._commentsModel.addComment(updateType, responce, film);
+            this._api.getFilms()
+            .then((films) => {
+              this._filmsModel.set(UpdateType.MINOR, films);
+            });
           })
           .catch(() => {
             this._filmPresenter[film.id].setAborting();
@@ -116,6 +140,10 @@ export default class MovieList {
         // Поэтому в модель мы всё также передаем update
         this._api.deleteComment(update, film)
           .then(() => {
+            this._api.getFilms()
+              .then((films) => {
+                this._filmsModel.set(UpdateType.MINOR, films);
+              });
             this._commentsModel.deleteComment(updateType, update, film);
           })
           .catch(() => {
@@ -130,7 +158,6 @@ export default class MovieList {
   // - обновить весь верхний раздел (например, при переключении фильтра)
   _handleModelEvent(updateType, data) {
     switch (updateType) {
-
       case UpdateType.PATCH:
         // обновляет карточку
         this._filmPresenter[data.id].init(data);
@@ -138,12 +165,14 @@ export default class MovieList {
 
       case UpdateType.MINOR:
         // - обновить список
-        this._clearMovieList();
+        this._clear();
+        this.renderProfile();
         this._renderAllFilmsList();
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску
-        this._clearMovieList({resetRenderedFilmCount: true, resetSortType: true});
+        this._clear({resetRenderedFilmCount: true, resetSortType: true});
+        this.renderProfile();
         this._renderAllFilmsList();
         break;
 
@@ -161,16 +190,13 @@ export default class MovieList {
   }
 
   // метод для рендеринга содержимого <main>
-  _renderMovieList() {
+  _render() {
     this._renderSort();
 
     // рендер <section class="films" (секция после сортировки)
     // со всеми разделами фильмов
     render(this._filmContainer, this._contentComponent, RenderPosition.BEFOREEND);
-
     this._renderAllFilmsList();
-    // this._renderTopRatedList();
-    // this._renderMostCommentedList();
   }
 
   // метод для рендеринга панели сортиовки
@@ -191,7 +217,6 @@ export default class MovieList {
     const films = this._getFilms();
     const filmCount = films.length;
 
-    // может быть не нужно
     if (filmCount === 0) {
       // если фильмов нет, рендерим заглушку
       this._renderNoFilms();
@@ -208,7 +233,7 @@ export default class MovieList {
     this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmAmount)));
 
 
-    if (filmCount > MAX_FILMS_PER_STEP) {
+    if (filmCount > this._renderedFilmAmount) {
       this._renderShowMoreButton();
     }
   }
@@ -229,11 +254,14 @@ export default class MovieList {
 
   // метод для рендеринга компонентов карточки с фильмом
   _renderFilmCard(film) {
-    this._filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._api);
-    this._filmCardPresenter.init(film);
+    const filmCardPresenter = new FilmCardPresenter(this._allFilmListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._api);
+    if (this._filmsModel.getOpenedPopup() === film.id) {
+      film.isPopupOpen = true;
+    }
+    filmCardPresenter.init(film);
 
     // сохраняет в observer все фильмы с ключами = id
-    this._filmPresenter[film.id] = this._filmCardPresenter;
+    this._filmPresenter[film.id] = filmCardPresenter;
   }
 
   // метод по рендерингу кнопки допоказа карточек фильмов
@@ -244,21 +272,40 @@ export default class MovieList {
     render(this._allFilmSectionComponent, this._showMoreButtonComponent, RenderPosition.BEFOREEND);
   }
 
-  // рендерит Top Rated раздел
-  _renderTopRatedList() {
-    const topRatedFilms = this._getFilms().slice();
-    topRatedFilms.sort(sortByRating);
+  _clear({resetRenderedFilmCount = false, resetSortType = false} = {}) {
+    // получаем кол-во задач, доступных на момент очистки movieList
+    const filmCount = this._getFilms().length;
 
-    this._topRatedListComponent.init(topRatedFilms);
-  }
+    // вызываем у каждого filmPresenter метод destroy
+    Object.values(this._filmPresenter)
+          .forEach((presenter) => presenter.destroy());
 
-  // рендерит Most Commented раздел
-  _renderMostCommentedList() {
-    const films = this._getFilms();
-    this._mostCommentedListComponent.init(films);
+    this._filmPresenter = {};
+
+    remove(this._noFilmComponent);
+    remove(this._showMoreButtonComponent);
+    remove(this._loadingComponent);
+
+    // условие, сброшено ли кол-во показанных фильмов
+    if (resetRenderedFilmCount) {
+      // если да, делаем его снова равным константе
+      this._renderedFilmAmount = MAX_FILMS_PER_STEP;
+    } else {
+      // если нет, нужно оставить то кол-во фильмов, кот. было
+      // показано, за исключением случаев переноса фильмов
+      // при сбросе признака-фильтра, поэтому число показанных фильмов
+      // нужно уменьшать на кол-во перенесенных фильмов
+      this._renderedFilmAmount = Math.min(filmCount, this._renderedFilmAmount);
+    }
+
+    if (resetSortType) {
+      this._curentSortType = SortType.DEFAULT;
+      this._sortComponent.setActiveButton(this._curentSortType);
+    }
   }
 
   _handleModeChange() {
+    this._filmsModel.setOpenedPopup(null);
     Object.values(this._filmPresenter)
           .forEach((presenter) => presenter.resetView());
   }
@@ -287,43 +334,9 @@ export default class MovieList {
     this._sortComponent.setActiveButton(this._curentSortType);
 
     // - Очищаем список
-    this._clearMovieList({resetRenderedFilmCount: true});
+    this._clear({resetRenderedFilmCount: true});
 
     // - Рендерим список заново
     this._renderAllFilmsList();
   }
-
-  _clearMovieList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
-    // получаем кол-во задач, доступных на момент очистки movieList
-    const filmCount = this._getFilms().length;
-
-    // вызываем у каждого filmPresenter метод destroy
-    Object.values(this._filmPresenter)
-          .forEach((presenter) => presenter.destroyFilmCard());
-
-    this._filmPresenter = {};
-
-    remove(this._noFilmComponent);
-    remove(this._showMoreButtonComponent);
-    remove(this._loadingComponent);
-
-    // условие, сброшено ли кол-во показанных фильмов
-    if (resetRenderedFilmCount) {
-      // если да, делаем его снова равным константе
-      this._renderedFilmAmount = MAX_FILMS_PER_STEP;
-    } else {
-      // если нет, нужно оставить то кол-во фильмов, кот. было
-      // показано, за исключением случаев переноса фильмов
-      // при сбросе признака-фильтра, поэтому число показанных фильмов
-      // нужно уменьшать на кол-во перенесенных фильмов
-      this._renderedFilmAmount = Math.min(filmCount, this._renderedFilmAmount);
-    }
-
-    if (resetSortType) {
-      this._curentSortType = SortType.DEFAULT;
-      this._sortComponent.setActiveButton(this._curentSortType);
-    }
-  }
-
-
 }
