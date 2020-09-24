@@ -1,5 +1,7 @@
 import moment from "moment";
 
+const MAX_SYMBOL_AMOUNT = 139;
+
 // функция превращает первую букву строки в заглавную
 export const capitalizeFirstLetter = (string) => {
   if (!string) {
@@ -10,24 +12,17 @@ export const capitalizeFirstLetter = (string) => {
 
 // функция возвращает дату выхода фильма в формате - DD MMMM YYYY
 export const formatReleaseData = (date) => {
-  if (!(date instanceof Date)) {
-    return ``;
-  }
-  return moment(date).format(`DD MMMM YYYY`);
+  return (!(date instanceof Date)) ? `` : moment(date).format(`DD MMMM YYYY`);
 };
 
 // функция форматирования описания фильма в карточке
 export const formatDescription = (descriptionText) => {
-  if (descriptionText.length < 140) {
-    return descriptionText;
-  }
-
-  return `${descriptionText.slice(0, 139)}...`;
+  return descriptionText.length <= MAX_SYMBOL_AMOUNT ? descriptionText : `${descriptionText.slice(0, MAX_SYMBOL_AMOUNT)}...`;
 };
 
-// функция возвращет дату в формате YYYY/MM/DD HH:mm
+// функция возвращет дату в человеческом формате
 export const formatDate = (date) => {
-  return moment(date).format(`YYYY/MM/DD HH:mm`);
+  return moment(date).fromNow();
 };
 
 // функция переводит продолжительность фильма из минут в часы и минуты
@@ -40,5 +35,19 @@ export const convertTextToKebabCase = (text) => text.toLowerCase().split(` `).jo
 export const convertToTextFromKebabCase = (string) => {
   const stringInLowerCase = string.split(`-`).join(` `);
   return stringInLowerCase[0].toUpperCase() + stringInLowerCase.slice(1);
+};
+
+export const update = (data, updatedData) => {
+  if (!updatedData) {
+    return data;
+  }
+
+  data = Object.assign(
+      {},
+      data,
+      updatedData
+  );
+
+  return data;
 };
 
