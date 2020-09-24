@@ -182,16 +182,6 @@ export default class Statistics extends SmartView {
     return createStatisticsTemplate(this._data);
   }
 
-  _periodClickHandler(evt) {
-    evt.preventDefault();
-    const periodValue = evt.target.value;
-    const adaptedValue = convertToTextFromKebabCase(periodValue);
-
-    this.updateData({
-      period: adaptedValue
-    });
-  }
-
   _setPeriod() {
     this.getElement()
         .querySelector(`.statistic__filters`)
@@ -208,5 +198,15 @@ export default class Statistics extends SmartView {
     const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
 
     this._filmsByGenresChart = renderFilmsByGenresChart(statisticCtx, watchedFilms, period);
+  }
+
+  _periodClickHandler(evt) {
+    evt.preventDefault();
+    const periodValue = evt.target.value;
+    const adaptedValue = convertToTextFromKebabCase(periodValue);
+
+    this.updateData({
+      period: adaptedValue
+    });
   }
 }

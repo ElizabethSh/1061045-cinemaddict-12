@@ -29,15 +29,15 @@ export default class Popup extends SmartView {
     return createPopupTemplate();
   }
 
-  _closeButtonClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.closeButtonClick();
-  }
-
   setCloseButtonClickHandler(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement()
         .querySelector(`.film-details__close-btn`)
         .addEventListener(`click`, this._closeButtonClickHandler);
+  }
+
+  _closeButtonClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
   }
 }

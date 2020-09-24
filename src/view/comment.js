@@ -41,16 +41,16 @@ export default class Comment extends SmartView {
     return createCommentItemTemplate(this._data);
   }
 
-  _deleteButtonClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.deleteClick(Comment.parseDataToComment(this._data));
-  }
-
   setDeleteButtonClickHandler(callback) {
     this._callback.deleteClick = callback;
     this.getElement()
         .querySelector(`.film-details__comment-delete`)
         .addEventListener(`click`, this._deleteButtonClickHandler);
+  }
+
+  _deleteButtonClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(Comment.parseDataToComment(this._data));
   }
 
   static parseCommentToData(comment) {

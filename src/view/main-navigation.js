@@ -29,16 +29,47 @@ export default class MainNavigation extends AbstractView {
     this._filters = filters;
     this._currentFilter = currentFilterType;
 
-    this.getElement()
-        .addEventListener(`click`, this._buttonClickHandler);
-
     this._filterTypeClickHandler = this._filterTypeClickHandler.bind(this);
     this._statsClickHandler = this._statsClickHandler.bind(this);
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
+
+    this.getElement()
+        .addEventListener(`click`, this._buttonClickHandler);
   }
 
   _getTemplate() {
     return createMainNavigationTemplate(this._filters, this._currentFilter);
+  }
+
+  setFilterTypeClickHandler(callback) {
+    this._callback.filterTypeClick = callback;
+    this.getElement()
+        .querySelector(`.main-navigation__items`)
+        .addEventListener(`click`, this._filterTypeClickHandler);
+  }
+
+  setStatsClickHandler(callback) {
+    this._callback.statsClick = callback;
+    this.getElement()
+        .querySelector(`.main-navigation__additional`)
+        .addEventListener(`click`, this._statsClickHandler);
+  }
+
+  _buttonClickHandler(evt) {
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+    evt.preventDefault();
+    const buttons = this.getElement()
+                        .querySelectorAll(`a`);
+
+    buttons.forEach((it) => it.classList.remove(`main-navigation__item--active`));
+    evt.target.classList.add(`main-navigation__item--active`);
+  }
+
+  _statsClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.statsClick(MenuItem.STATISTICS);
   }
 
   _filterTypeClickHandler(evt) {
@@ -56,35 +87,5 @@ export default class MainNavigation extends AbstractView {
     const menuCategory = isFilter ? MenuItem.FILTERS : filterType;
 
     this._callback.filterTypeClick(menuCategory, filterType);
-  }
-
-  _statsClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.statsClick(MenuItem.STATISTICS);
-  }
-
-  _buttonClickHandler(evt) {
-    if (evt.target.tagName !== `A`) {
-      return;
-    }
-    evt.preventDefault();
-    const buttons = this.querySelectorAll(`a`);
-
-    buttons.forEach((it) => it.classList.remove(`main-navigation__item--active`));
-    evt.target.classList.add(`main-navigation__item--active`);
-  }
-
-  setFilterTypeClickHandler(callback) {
-    this._callback.filterTypeClick = callback;
-    this.getElement()
-        .querySelector(`.main-navigation__items`)
-        .addEventListener(`click`, this._filterTypeClickHandler);
-  }
-
-  setStatsClickHandler(callback) {
-    this._callback.statsClick = callback;
-    this.getElement()
-        .querySelector(`.main-navigation__additional`)
-        .addEventListener(`click`, this._statsClickHandler);
   }
 }
