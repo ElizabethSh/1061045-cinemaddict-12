@@ -27,15 +27,6 @@ export const render = (container, child, position) => {
   }
 };
 
-export const renderTemplate = (container, template, position) => {
-  // условие нужно, чтобы функция принимала не только DOM-элементы,
-  // но и компоненты
-  if (container instanceof Abstract) {
-    container = container.getElement();
-  }
-  container.insertAdjacentHTML(position, template);
-};
-
 // функция превращает шаблонную строку с разметкой в DOM-элемент
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
@@ -66,10 +57,9 @@ export const replace = (newChild, oldChild) => {
   }
 
   const parent = oldChild.parentElement;
-  if (parent === null || oldChild === null || newChild === null) {
+  if (parent === null || newChild === null) {
     throw new Error(`Can't replace unexisting elements`);
   }
-
   parent.replaceChild(newChild, oldChild);
 };
 
