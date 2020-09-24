@@ -1,5 +1,6 @@
 import {EMOJIS} from "../const.js";
 import AbstractView from "./abstract.js";
+import {update} from "../utils/common.js";
 
 const BLANK_COMMENT = {
   emoji: `smile`,
@@ -101,18 +102,6 @@ export default class FilmComments extends AbstractView {
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-        {},
-        this._data,
-        update
-    );
-  }
-
   disableForm() {
     this._form.disabled = true;
   }
@@ -123,6 +112,20 @@ export default class FilmComments extends AbstractView {
 
   _getTemplate() {
     return createFilmCommentsTemplate(this._comments);
+  }
+
+  setFormSubmitClickHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement()
+        .querySelector(`.film-details__comment-input`)
+        .addEventListener(`keydown`, this._formSubmitClickHandler);
+  }
+
+  _formSubmitClickHandler(evt) {
+    if ((evt.ctrlKey && evt.keyCode === 13) || (evt.keyCode === 13 && evt.metaKey)) {
+      evt.preventDefault();
+      this._callback.formSubmit(FilmComments.parseCommentToData(this._data));
+    }
   }
 
   _emojiClickHandler(evt) {
@@ -136,30 +139,20 @@ export default class FilmComments extends AbstractView {
     evt.preventDefault();
 
     userEmoji.innerHTML = `<img src="./images/emoji/${emoji}.png" width="60" height="60" alt="emoji-${emoji}">`;
-    this.updateData({
+
+    this._data = update(this._data, {
       emoji: `${emoji}`
     });
-  }
 
-  _formSubmitClickHandler(evt) {
-    if ((evt.ctrlKey && evt.keyCode === 13) || (evt.keyCode === 13 && evt.metaKey)) {
-      evt.preventDefault();
-      this._callback.formSubmit(FilmComments.parseCommentToData(this._data));
-    }
   }
 
   _commentMessageInputHandler(evt) {
     evt.preventDefault();
-    this.updateData({
+
+    this._data = update(this._data, {
       commentMessage: evt.target.value
     });
-  }
 
-  setFormSubmitClickHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement()
-        .querySelector(`.film-details__comment-input`)
-        .addEventListener(`keydown`, this._formSubmitClickHandler);
   }
 
   static parseCommentToData(newComment) {
