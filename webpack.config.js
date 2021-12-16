@@ -10,8 +10,9 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'public'),
-    watchContentBase: true,
+    open: true,
+    port:3000,
+    hot: false
   },
   plugins: [
     new MomentLocalesPlugin()
