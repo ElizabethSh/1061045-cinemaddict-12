@@ -15,7 +15,7 @@
     "moment-locales-webpack-plugin": "1.2.0",
     "webpack": "^5.62.1",
     "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^4.6.0"
+    "webpack-dev-server": "^4.11.1"
   },
   "engines": {
     "node": "14"
@@ -24,6 +24,6 @@
     "chart.js": "2.9.4",
     "chartjs-plugin-datalabels": "0.7.0",
     "he": "1.2.0",
-    "moment": "2.27.0"
+    "moment": "^2.29.4"
   }
 }
