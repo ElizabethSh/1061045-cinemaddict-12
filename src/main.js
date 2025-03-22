@@ -11,8 +11,8 @@ import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTORIZATION = `Basic 0K3RgtC+IPCfkJQg0L3QsCDRgdC80LXRhSE=`;
-const END_POINT = `https://15.ecmascript.htmlacademy.pro/cinemaddict`;
+const AUTHORIZATION = 'Basic hS2sfSff4wcj356hg';
+const END_POINT = 'https://19.ecmascript.htmlacademy.pro/cinemaddict';
 const STORE_FILMS_PREFIX = `cinemaddict-films-localstorage`;
 const STORE_COMMENTS_PREFIX = `cinemaddict-comments-localstorage`;
 const STORE_VER = `v15`;
@@ -23,7 +23,7 @@ const siteMain = document.querySelector(`.main`);
 const siteFooter = document.querySelector(`.footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
 
-const api = new Api(END_POINT, AUTORIZATION);
+const api = new Api(END_POINT, AUTHORIZATION);
 const filmsStore = new Store(STORE_FILMS_NAME, window.localStorage);
 const commentsStore = new Store(STORE_COMMENTS_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, filmsStore, commentsStore);
