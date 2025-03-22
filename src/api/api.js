@@ -15,47 +15,31 @@ const SuccessHTTPStatusRange = {
 
 export default class Api {
   constructor(endPoint, autorization) {
-    this._endPoint = endPoint; // адрес сервера
-    this._autorization = autorization; // данные для авторизации
+    this._endPoint = endPoint;
+    this._autorization = autorization;
   }
 
-  // метод будет будет запрашивать на сервере
-  // информацию о задачах
   getFilms() {
-    // вызываем метод _load и передаем ему url - адрес ресурса
     return this._load({url: `movies`})
-    // полученный результат обрабатываем с пом. статич. метода Api.toJSON
-    // который вызывает метод json у объекта ответа сервера
-      .then(Api.toJSON)
+      .then((response) => response.json())
       .then((films) => films.map(FilmsModel.adaptToClient));
   }
 
   getComments(film) {
     return this._load({url: `comments/${film.id}`})
-    .then(Api.toJSON)
+    .then((response) => response.json())
     .then((comments) => comments.map(CommentsModel.adaptToClient));
   }
 
 
   updateFilm(film) {
-    // вызываем метод _load, но передаем ему немного другие данные
     return this._load({
-      // чтобы обновить конкретную задачу нужно обратиться к url=tasks
-      // и передать идентификатор задачи (task.id)
       url: `movies/${film.id}`,
-      // обновление задачи происходит с пом.
-      // метода PUT - полная замена всех данных
       method: Method.PUT,
-      // передаем тело запроса - ту задачу, кот. нужно обновить
-      // задачу, получ. в параметре стерилизуем с пом.
-      // метода stringify() и адаптируем для бэкенда
       body: JSON.stringify(FilmsModel.adaptToServer(film)),
-      // передаем заголовок, в кот. указываем что данные
-      // находятся в формате aplication/json
       headers: new Headers({"Content-Type": `application/json`})
     })
-    // получ. запрос обрабатываем с пом. статич. метода Api.toJSON
-      .then(Api.toJSON)
+      .then((response) => response.json())
       .then(FilmsModel.adaptToClient);
   }
 
@@ -66,7 +50,7 @@ export default class Api {
       body: JSON.stringify(CommentsModel.adaptToServer(comment)),
       headers: new Headers({"Content-Type": `application/json`})
     })
-    .then(Api.toJSON)
+    .then((response) => response.json())
     .then(CommentsModel.adaptToClient);
   }
 
@@ -77,7 +61,7 @@ export default class Api {
     });
   }
 
-  // метод для синхронизации данных
+  // sync data
   sync(data) {
     return this._load({
       url: `movies/sync`,
@@ -85,7 +69,7 @@ export default class Api {
       body: JSON.stringify(data),
       headers: new Headers({"Content-Type": `application/json`})
     })
-      .then(Api.toJSON);
+      .then((response) => response.json());
   }
 
   _load({
@@ -96,39 +80,24 @@ export default class Api {
   }) {
     headers.append(`Authorization`, this._autorization);
 
-    // вызываем fetch и передаем ему полный путь к желаемому ресурсу
-    return fetch(
-        // полный путь состоит из имени сервера(this._endPoint) и адреса ресурса (url)
-        // например доступ к задачам будет по ресурсу films - это и будет url
-        `${this._endPoint}/${url}`,
-        {method, body, headers}
-    )
-    // fetch вернет промис - используем then, в кот. передаем колбэк
+    return fetch(`${this._endPoint}/${url}`,{method, body, headers})
     .then(Api.checkStatus)
     .catch(Api.catchError);
   }
 
-  // метод для проверки статуса ответа сервера
+  // check server status
   static checkStatus(response) {
 
-    // если код статуса меньше 200 или больше 299, то
-    // бросить ошибку
     if (
       response.status < SuccessHTTPStatusRange.MIN ||
       response.status > SuccessHTTPStatusRange.MAX
     ) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
-    // иначе - вернуть запрос
     return response;
   }
 
-  // метод который вызывает метод .json у объекта ответа сервера
-  static toJSON(response) {
-    return response.json();
-  }
-
-  // метод для обработки ошибок в .catch
+  // error handler
   static catchError(err) {
     throw err;
   }

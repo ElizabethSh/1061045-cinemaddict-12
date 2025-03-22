@@ -53,7 +53,7 @@ export default class Films extends Observer {
           writers: film.film_info.writers,
           director: film.film_info.director,
           actors: film.film_info.actors,
-          runtime: film.film_info.runtime,
+          runtime: film.film_info.duration,
           genres: film.film_info.genre,
           original: film.film_info.alternative_title,
           ageRating: film.film_info.age_rating,
@@ -65,7 +65,6 @@ export default class Films extends Observer {
         }
     );
 
-    // Ненужные ключи удаляем
     delete adaptedFilm.film_info.title;
     delete adaptedFilm.film_info.director;
     delete adaptedFilm.film_info.poster;

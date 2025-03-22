@@ -1,3 +1,6 @@
-# Training project «Cinemaddict»
+Cinemaaddict is an SPA for fans of the movies. 🎬🍿🎞️
 
-Cinemaddict is a service for fans of big movies. Detailed information about cinema, the ability to choose and create your own list of films to watch, discussion of films and much more. Cinemaddict will help you to spend time interestingly.
+You can find detailed information about the movies, sort them by date or rating, form your own watch list, or favorites list. All movie cards have comments section, where you can leave or delete comments. Also, you can check the statistics.
+
+To run this project locally:
+npm install && npm start
