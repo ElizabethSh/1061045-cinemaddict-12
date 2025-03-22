@@ -12,10 +12,14 @@ export const getRank = (films) => {
   if (films.length > UserRankRate.FAN) {
     return UserRank.MOVIE_BUFF;
   }
-  return ` `;
+  return null;
 };
 
 export const formatUserRank = (string) => {
+  if (!string) {
+    return;
+  }
+
   const strings = string.split(` `);
   return strings.map((it) => it[0].toUpperCase() + it.slice(1)).join(`-`);
 };
